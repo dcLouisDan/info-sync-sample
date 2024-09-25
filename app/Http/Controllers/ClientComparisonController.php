@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Services\NinjaService;
+use App\Utils\StringUtils;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Inertia\Inertia;
 use InvoiceNinja\Sdk\InvoiceNinja;
 
 class ClientComparisonController extends Controller
@@ -17,7 +19,7 @@ class ClientComparisonController extends Controller
         // Fetch clients from Invoice Ninja
         $invoiceClients = $this->fetchInvoiceNinjaClients();
 
-        return view('dashboard', [
+        return Inertia::render('Dashboard', [
             'quickbaseClients' => $this->parseQuickbaseResponse($quickbaseClients['data'], $quickbaseClients['fields']),
             'invoiceClients' => $this->parseNinjaResponse($invoiceClients)
         ]);
@@ -29,7 +31,8 @@ class ClientComparisonController extends Controller
         foreach ($data as $item) {
             $client = [];
             foreach ($fields as $field) {
-                $client[$field['label']] = $item[$field['id']]['value'];
+                $label = StringUtils::toCamelCase($field['label']);
+                $client[$label] = $item[$field['id']]['value'];
             }
             $clientData[] = $client;
         }
@@ -42,9 +45,9 @@ class ClientComparisonController extends Controller
         $clientData = [];
         foreach ($response['data'] as $item) {
             $client = [
-                "Client Name" => $item['name'],
-                "Contact Name" => $item['contacts'][0]['first_name'] . " " . $item['contacts'][0]['last_name'],
-                "Email" => $item['contacts'][0]['email']
+                "number" => $item['number'],
+                "clientName" => $item['name'],
+                "contactName" => $item['contacts'][0]['first_name'] . " " . $item['contacts'][0]['last_name'],
             ];
 
             $clientData[] = $client;
@@ -66,7 +69,8 @@ class ClientComparisonController extends Controller
             'select' => [
                 6,
                 7,
-                8
+                8,
+                11
             ],
         ]);
 
