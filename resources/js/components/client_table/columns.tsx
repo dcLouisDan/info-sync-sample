@@ -24,4 +24,8 @@ export const columns: ColumnDef<Client>[] = [
         accessorKey: "contactName",
         header: "Contact Name",
     },
+    {
+        accessorKey: "email",
+        header: "Email",
+    },
 ];

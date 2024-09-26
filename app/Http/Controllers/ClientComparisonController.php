@@ -48,6 +48,7 @@ class ClientComparisonController extends Controller
                 "number" => $item['number'],
                 "clientName" => $item['name'],
                 "contactName" => $item['contacts'][0]['first_name'] . " " . $item['contacts'][0]['last_name'],
+                "email" => $item['contacts'][0]['email'],
             ];
 
             $clientData[] = $client;
