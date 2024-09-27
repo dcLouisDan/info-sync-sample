@@ -12,6 +12,76 @@ type Props = {
     invoiceClients: Array<any>;
 };
 
+function QBInvoiceForm() {
+    const { data, setData, post, processing, reset, errors } = useForm({
+        clientNumber: "",
+        clientName: "",
+        description: "",
+        item: "",
+        amount: "",
+    });
+    return (
+        <div>
+            <h2>Add new Invoice</h2>
+            <form
+                className="grid grid-cols-2 gap-2 pb-4 border-b-2"
+                onSubmit={(e) => {
+                    e.preventDefault();
+
+                    post(route("ninjaClient.add"), {
+                        onSuccess: () => reset(),
+                        onError: (error) => {
+                            console.log(error);
+                        },
+                    });
+                }}
+            >
+                <Input
+                    type="text"
+                    placeholder="Client Number"
+                    name="clientNumber"
+                    value={data.clientNumber}
+                    onChange={(e) => setData("clientNumber", e.target.value)}
+                    required
+                />
+                <Input
+                    type="text"
+                    placeholder="Client Number"
+                    name="clientName"
+                    value={data.clientNumber}
+                    onChange={(e) => setData("clientNumber", e.target.value)}
+                    required
+                />
+                <Input
+                    type="text"
+                    placeholder="Description"
+                    name="description"
+                    value={data.clientNumber}
+                    onChange={(e) => setData("clientNumber", e.target.value)}
+                    required
+                />
+                <Input
+                    type="text"
+                    placeholder="Item"
+                    name="item"
+                    value={data.clientNumber}
+                    onChange={(e) => setData("clientNumber", e.target.value)}
+                    required
+                />
+                <Input
+                    type="number"
+                    placeholder="Amount"
+                    name="amount"
+                    value={data.clientNumber}
+                    onChange={(e) => setData("clientNumber", e.target.value)}
+                    required
+                />
+                <Button type="submit">Submit</Button>
+            </form>
+        </div>
+    );
+}
+
 export default function Dashboard({ quickbaseClients, invoiceClients }: Props) {
     const { props } = usePage<PageProps & { flash: FlashMessages }>();
     const { success, error } = props.flash ?? { success: null, error: null };
@@ -41,6 +111,7 @@ export default function Dashboard({ quickbaseClients, invoiceClients }: Props) {
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
                             <h1 className="text-center font-bold">Quickbase</h1>
+                            <QBInvoiceForm />
                             <DataTable
                                 columns={columns}
                                 data={quickbaseClients}

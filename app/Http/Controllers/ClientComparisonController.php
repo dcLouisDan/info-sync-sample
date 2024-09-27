@@ -57,13 +57,13 @@ class ClientComparisonController extends Controller
         return $clientData;
     }
 
-    private function fetchQuickbaseClients()
+    public function fetchQuickbaseClients()
     {
         // Replace with your Quickbase API details
         $response = Http::withHeaders([
-            'QB-Realm-Hostname' => 'builderprogram-ddelacruz6769.quickbase.com',
+            'QB-Realm-Hostname' => env("QB_REALM_HOST_NAME"),
             'User-Agent' => 'Invoice Sync Test',
-            'Authorization' => 'QB-USER-TOKEN b9zxjm_rcks_0_q5pjufdi7bwbadjxbxpgbpw7i6t',
+            'Authorization' => 'QB-USER-TOKEN ' . env("QB_USER_TOKEN"),
             'Content-Type' => 'application/json',
         ])->post('https://api.quickbase.com/v1/records/query', [
             'from' => 'buiq4dven',

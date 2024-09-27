@@ -12,9 +12,6 @@ class QuickbaseWebhookController extends Controller
     //
     public function handle(Request $request)
     {
-        Log::info('Quickbase Webhook Data: ', $request->all());
-
-
         $ninja = NinjaService::getInstance();
         $clientData = $request;
         $clientName = StringUtils::separateName($clientData['contactName']);
