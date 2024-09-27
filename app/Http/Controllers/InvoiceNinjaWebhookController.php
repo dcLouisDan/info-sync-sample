@@ -25,6 +25,7 @@ class InvoiceNinjaWebhookController extends Controller
         if (is_array($requestData)) {
             // Example: Accessing specific data from the request
             $invoiceData = [
+                "invoiceNumber" => $requestData['number'],
                 "clientNumber" => $requestData['client']['number'] ?? 'Unknown',
                 "clientName" => $requestData['client']['name'] ?? 'Unknown',
                 "item" => $requestData["line_items"][0]['product_key'],

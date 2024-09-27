@@ -61,6 +61,16 @@ class QuickbaseService
     return $this->makeRequest('records/query', 'POST', $body);
   }
 
+  public function fetchInvoices()
+  {
+    $body = [
+      'from' => $this->tables["invoices"],
+      'select' => [6, 7, 9, 12, 13]  // Replace with field IDs
+    ];
+
+    return $this->makeRequest('records/query', 'POST', $body);
+  }
+
   /**
    * Insert a new client into Quickbase
    * 
@@ -139,6 +149,9 @@ class QuickbaseService
           ],
           "12" => [
             "value" => $invoiceData['clientNumber']
+          ],
+          "13" => [
+            "value" => $invoiceData['invoiceNumber']
           ]
         ]
       ]

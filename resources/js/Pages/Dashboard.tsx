@@ -1,15 +1,21 @@
 import { columns } from "@/components/client_table/columns";
+import { columns as invoice_columns } from "@/components/invoice_table/columns";
 import { DataTable } from "@/components/client_table/data-table";
+import { DataTable as InvoiceTable } from "@/components/invoice_table/data-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { PageProps } from "@/types";
 import { FlashMessages } from "@/types/global";
 import { Head, useForm, usePage } from "@inertiajs/react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Props = {
     quickbaseClients: Array<any>;
     invoiceClients: Array<any>;
+    quickbaseInvoices: Array<any>;
+    invoiceInvoices: Array<any>;
+    ninjaInvoices: Array<any>;
 };
 
 function QBInvoiceForm() {
@@ -24,7 +30,7 @@ function QBInvoiceForm() {
         <div>
             <h2>Add new Invoice</h2>
             <form
-                className="grid grid-cols-2 gap-2 pb-4 border-b-2"
+                className="grid grid-cols-2 gap-1 pb-4 border-b"
                 onSubmit={(e) => {
                     e.preventDefault();
 
@@ -82,7 +88,13 @@ function QBInvoiceForm() {
     );
 }
 
-export default function Dashboard({ quickbaseClients, invoiceClients }: Props) {
+export default function Dashboard({
+    quickbaseClients,
+    invoiceClients,
+    quickbaseInvoices,
+    invoiceInvoices,
+    ninjaInvoices,
+}: Props) {
     const { props } = usePage<PageProps & { flash: FlashMessages }>();
     const { success, error } = props.flash ?? { success: null, error: null };
     const { data, setData, post, processing, reset, errors } = useForm({
@@ -92,6 +104,8 @@ export default function Dashboard({ quickbaseClients, invoiceClients }: Props) {
         contactLastName: "",
         email: "",
     });
+    console.log(ninjaInvoices);
+    console.log(invoiceInvoices);
     return (
         <AuthenticatedLayout
             header={
@@ -109,13 +123,31 @@ export default function Dashboard({ quickbaseClients, invoiceClients }: Props) {
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 grid grid-cols-2 gap-2">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
+                        <div className="p-6 text-gray-900 grid gap-4">
                             <h1 className="text-center font-bold">Quickbase</h1>
                             <QBInvoiceForm />
-                            <DataTable
-                                columns={columns}
-                                data={quickbaseClients}
-                            />
+                            <Tabs defaultValue="clients">
+                                <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="clients">
+                                        Clients
+                                    </TabsTrigger>
+                                    <TabsTrigger value="invoices">
+                                        Invoices
+                                    </TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="clients">
+                                    <DataTable
+                                        columns={columns}
+                                        data={quickbaseClients}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="invoices">
+                                    <InvoiceTable
+                                        columns={invoice_columns}
+                                        data={quickbaseInvoices}
+                                    />
+                                </TabsContent>
+                            </Tabs>
                         </div>
                     </div>
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -123,7 +155,7 @@ export default function Dashboard({ quickbaseClients, invoiceClients }: Props) {
                             <h1 className="text-center font-bold">
                                 Invoice Ninja
                             </h1>
-                            <div>
+                            <div className="grid gap-4">
                                 <h2>Add New Client</h2>
                                 <form
                                     className="grid gap-1 grid-cols-2 border-b pb-4"
@@ -199,11 +231,31 @@ export default function Dashboard({ quickbaseClients, invoiceClients }: Props) {
                                     />
                                     <Button className="">Submit</Button>
                                 </form>
+                                <Tabs defaultValue="clients">
+                                    <TabsList className="grid w-full grid-cols-2">
+                                        <TabsTrigger value="clients">
+                                            Clients
+                                        </TabsTrigger>
+                                        <TabsTrigger value="invoices">
+                                            Invoices
+                                        </TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="clients">
+                                        <DataTable
+                                            columns={columns}
+                                            data={invoiceClients}
+                                        />
+                                    </TabsContent>
+                                    <TabsContent value="invoices">
+                                        <TabsContent value="invoices">
+                                            <InvoiceTable
+                                                columns={invoice_columns}
+                                                data={invoiceInvoices}
+                                            />
+                                        </TabsContent>
+                                    </TabsContent>
+                                </Tabs>
                             </div>
-                            <DataTable
-                                columns={columns}
-                                data={invoiceClients}
-                            />
                         </div>
                     </div>
                 </div>

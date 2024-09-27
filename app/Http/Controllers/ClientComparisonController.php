@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\NinjaService;
+use App\Services\QuickbaseService;
 use App\Utils\StringUtils;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -15,18 +16,25 @@ class ClientComparisonController extends Controller
     {
         // Fetch clients from Quickbase
         $quickbaseClients = $this->fetchQuickbaseClients();
+        $quickbaseInvoices = $this->fetchQuickbaseInvoices();
 
         // Fetch clients from Invoice Ninja
         $invoiceClients = $this->fetchInvoiceNinjaClients();
+        $invoiceInvoices = $this->fetchInvoiceNinjaInvoices();
 
         return Inertia::render('Dashboard', [
-            'quickbaseClients' => $this->parseQuickbaseResponse($quickbaseClients['data'], $quickbaseClients['fields']),
-            'invoiceClients' => $this->parseNinjaResponse($invoiceClients)
+            'quickbaseClients' => $this->parseQuickbaseResponse($quickbaseClients),
+            'invoiceClients' => $this->parseNinjaResponse($invoiceClients),
+            'quickbaseInvoices' => $this->parseQuickbaseResponse($quickbaseInvoices),
+            'invoiceInvoices' => $this->parseNinjaInvoiceResponse($invoiceInvoices),
+            'ninjaInvoices' => $invoiceInvoices['data']
         ]);
     }
 
-    private function parseQuickbaseResponse(array $data, array $fields)
+    private function parseQuickbaseResponse(array $body)
     {
+        $data = $body['data'];
+        $fields = $body['fields'];
         $clientData = [];
         foreach ($data as $item) {
             $client = [];
@@ -57,32 +65,49 @@ class ClientComparisonController extends Controller
         return $clientData;
     }
 
+    private function parseNinjaInvoiceResponse(array $response)
+    {
+        $invoiceData = [];
+        foreach ($response['data'] as $item) {
+            $invoice = [
+                "invoiceNumber" => $item['number'],
+                "clientNumber" => $item['client']['number'] ?? 'Unknown',
+                "clientName" => $item['client']['name'] ?? 'Unknown',
+                "item" => $item["line_items"][0]['product_key'],
+                "description" => $item["line_items"][0]['product_key'],
+                "amount" => $item["line_items"][0]['cost'],
+            ];
+
+            $invoiceData[] = $invoice;
+        }
+
+        return $invoiceData;
+    }
+
     public function fetchQuickbaseClients()
     {
-        // Replace with your Quickbase API details
-        $response = Http::withHeaders([
-            'QB-Realm-Hostname' => env("QB_REALM_HOST_NAME"),
-            'User-Agent' => 'Invoice Sync Test',
-            'Authorization' => 'QB-USER-TOKEN ' . env("QB_USER_TOKEN"),
-            'Content-Type' => 'application/json',
-        ])->post('https://api.quickbase.com/v1/records/query', [
-            'from' => 'buiq4dven',
-            'select' => [
-                6,
-                7,
-                8,
-                11
-            ],
-        ]);
-
-        return $response->json();
+        $qb = new QuickbaseService();
+        return $qb->fetchClients();
     }
 
     private function fetchInvoiceNinjaClients()
     {
         $ninja = NinjaService::getInstance();
         $clients = $ninja->clients->all();
-
         return $clients;
+    }
+
+    private function fetchInvoiceNinjaInvoices()
+    {
+        $ninja = NinjaService::getInstance();
+        $clients = $ninja->invoices->all(['status' => 'active', 'include' => 'client']);
+        return $clients;
+    }
+
+    private function fetchQuickbaseInvoices()
+    {
+        $qb = new QuickbaseService();
+
+        return $qb->fetchInvoices();
     }
 }
