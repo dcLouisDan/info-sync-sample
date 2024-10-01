@@ -16,6 +16,7 @@ type Props = {
     quickbaseInvoices: Array<any>;
     invoiceInvoices: Array<any>;
     ninjaInvoices: Array<any>;
+    inconsistencies: Array<any>;
 };
 
 function QBInvoiceForm() {
@@ -88,15 +89,7 @@ function QBInvoiceForm() {
     );
 }
 
-export default function Dashboard({
-    quickbaseClients,
-    invoiceClients,
-    quickbaseInvoices,
-    invoiceInvoices,
-    ninjaInvoices,
-}: Props) {
-    const { props } = usePage<PageProps & { flash: FlashMessages }>();
-    const { success, error } = props.flash ?? { success: null, error: null };
+function NewNinjaClientForm() {
     const { data, setData, post, processing, reset, errors } = useForm({
         number: "",
         clientName: "",
@@ -104,8 +97,83 @@ export default function Dashboard({
         contactLastName: "",
         email: "",
     });
-    console.log(ninjaInvoices);
-    console.log(invoiceInvoices);
+    return (
+        <div className="grid gap-4">
+            <h2>Add New Client</h2>
+            <form
+                className="grid gap-1 grid-cols-2 border-b pb-4"
+                onSubmit={(e) => {
+                    e.preventDefault();
+
+                    post(route("ninjaClient.add"), {
+                        onSuccess: () => reset(),
+                        onError: (error) => {
+                            console.log(error);
+                        },
+                    });
+                }}
+            >
+                <Input
+                    type="text"
+                    placeholder="Account Number"
+                    name="number"
+                    value={data.number}
+                    onChange={(e) => setData("number", e.target.value)}
+                    required
+                />
+                <Input
+                    type="text"
+                    placeholder="Client Name"
+                    name="clientName"
+                    value={data.clientName}
+                    onChange={(e) => setData("clientName", e.target.value)}
+                    required
+                />
+                <Input
+                    type="text"
+                    placeholder="Contact First Name"
+                    name="contactFirstName"
+                    value={data.contactFirstName}
+                    onChange={(e) =>
+                        setData("contactFirstName", e.target.value)
+                    }
+                    required
+                />
+                <Input
+                    type="text"
+                    placeholder="Contact Last Name"
+                    name="contactLastName"
+                    value={data.contactLastName}
+                    onChange={(e) => setData("contactLastName", e.target.value)}
+                    required
+                />
+                <Input
+                    type="email"
+                    placeholder="Email"
+                    name="email"
+                    value={data.email}
+                    onChange={(e) => setData("email", e.target.value)}
+                    required
+                />
+                <Button className="">Submit</Button>
+            </form>
+        </div>
+    );
+}
+
+export default function Dashboard({
+    quickbaseClients,
+    invoiceClients,
+    quickbaseInvoices,
+    invoiceInvoices,
+    ninjaInvoices,
+    inconsistencies,
+}: Props) {
+    const { props } = usePage<PageProps & { flash: FlashMessages }>();
+    const { success, error } = props.flash ?? { success: null, error: null };
+
+    // console.log(quickbaseClients);
+    console.log(inconsistencies);
     return (
         <AuthenticatedLayout
             header={
@@ -120,12 +188,58 @@ export default function Dashboard({
 
             {/* Display Error Message */}
             {error && <div className="alert alert-danger">{error}</div>}
+
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 grid grid-cols-2 gap-2">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 grid gap-4">
+                            {inconsistencies[0].length != 0 && (
+                                <div className="bg-destructive text-white px-6 py-4 overflow-hidden shadow-sm sm:rounded-lg">
+                                    <h1>Inconsistencies:</h1>
+                                    <ul className="list-disc">
+                                        {Object.keys(inconsistencies[1]).map(
+                                            (item) => {
+                                                return (
+                                                    <li key={item}>
+                                                        {Object.keys(
+                                                            inconsistencies[1][
+                                                                item
+                                                            ]["differences"]
+                                                        ).map((diff, index) => {
+                                                            if (
+                                                                typeof diff ===
+                                                                "string"
+                                                            ) {
+                                                                return (
+                                                                    <div
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                    >
+                                                                        {item} :{" "}
+                                                                        {diff} :{" "}
+                                                                        {
+                                                                            inconsistencies[1][
+                                                                                item
+                                                                            ][
+                                                                                "differences"
+                                                                            ][
+                                                                                diff
+                                                                            ]
+                                                                        }
+                                                                    </div>
+                                                                );
+                                                            }
+                                                        })}
+                                                    </li>
+                                                );
+                                            }
+                                        )}
+                                    </ul>
+                                </div>
+                            )}
                             <h1 className="text-center font-bold">Quickbase</h1>
-                            <QBInvoiceForm />
+                            {/* <QBInvoiceForm /> */}
                             <Tabs defaultValue="clients">
                                 <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="clients">
@@ -151,111 +265,70 @@ export default function Dashboard({
                         </div>
                     </div>
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
+                        <div className="p-6 text-gray-900 grid gap-4">
+                            {inconsistencies[1].length != 0 && (
+                                <div className="bg-destructive text-white p-6 overflow-hidden shadow-sm sm:rounded-lg">
+                                    <h1>Inconsistencies:</h1>
+                                    <ul className="list-disc">
+                                        {Object.keys(inconsistencies[0]).map(
+                                            (item) => {
+                                                return (
+                                                    <li key={item}>
+                                                        {Object.keys(
+                                                            inconsistencies[0][
+                                                                item
+                                                            ]["differences"]
+                                                        ).map((diff, index) => {
+                                                            return (
+                                                                <div
+                                                                    key={index}
+                                                                >
+                                                                    {item} :{" "}
+                                                                    {diff} :{" "}
+                                                                    {
+                                                                        inconsistencies[0][
+                                                                            item
+                                                                        ][
+                                                                            "differences"
+                                                                        ][diff]
+                                                                    }
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </li>
+                                                );
+                                            }
+                                        )}
+                                    </ul>
+                                </div>
+                            )}
                             <h1 className="text-center font-bold">
                                 Invoice Ninja
                             </h1>
-                            <div className="grid gap-4">
-                                <h2>Add New Client</h2>
-                                <form
-                                    className="grid gap-1 grid-cols-2 border-b pb-4"
-                                    onSubmit={(e) => {
-                                        e.preventDefault();
-
-                                        post(route("ninjaClient.add"), {
-                                            onSuccess: () => reset(),
-                                            onError: (error) => {
-                                                console.log(error);
-                                            },
-                                        });
-                                    }}
-                                >
-                                    <Input
-                                        type="text"
-                                        placeholder="Account Number"
-                                        name="number"
-                                        value={data.number}
-                                        onChange={(e) =>
-                                            setData("number", e.target.value)
-                                        }
-                                        required
+                            <Tabs defaultValue="clients">
+                                <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="clients">
+                                        Clients
+                                    </TabsTrigger>
+                                    <TabsTrigger value="invoices">
+                                        Invoices
+                                    </TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="clients">
+                                    <DataTable
+                                        columns={columns}
+                                        data={invoiceClients}
                                     />
-                                    <Input
-                                        type="text"
-                                        placeholder="Client Name"
-                                        name="clientName"
-                                        value={data.clientName}
-                                        onChange={(e) =>
-                                            setData(
-                                                "clientName",
-                                                e.target.value
-                                            )
-                                        }
-                                        required
-                                    />
-                                    <Input
-                                        type="text"
-                                        placeholder="Contact First Name"
-                                        name="contactFirstName"
-                                        value={data.contactFirstName}
-                                        onChange={(e) =>
-                                            setData(
-                                                "contactFirstName",
-                                                e.target.value
-                                            )
-                                        }
-                                        required
-                                    />
-                                    <Input
-                                        type="text"
-                                        placeholder="Contact Last Name"
-                                        name="contactLastName"
-                                        value={data.contactLastName}
-                                        onChange={(e) =>
-                                            setData(
-                                                "contactLastName",
-                                                e.target.value
-                                            )
-                                        }
-                                        required
-                                    />
-                                    <Input
-                                        type="email"
-                                        placeholder="Email"
-                                        name="email"
-                                        value={data.email}
-                                        onChange={(e) =>
-                                            setData("email", e.target.value)
-                                        }
-                                        required
-                                    />
-                                    <Button className="">Submit</Button>
-                                </form>
-                                <Tabs defaultValue="clients">
-                                    <TabsList className="grid w-full grid-cols-2">
-                                        <TabsTrigger value="clients">
-                                            Clients
-                                        </TabsTrigger>
-                                        <TabsTrigger value="invoices">
-                                            Invoices
-                                        </TabsTrigger>
-                                    </TabsList>
-                                    <TabsContent value="clients">
-                                        <DataTable
-                                            columns={columns}
-                                            data={invoiceClients}
+                                </TabsContent>
+                                <TabsContent value="invoices">
+                                    <TabsContent value="invoices">
+                                        <InvoiceTable
+                                            columns={invoice_columns}
+                                            data={invoiceInvoices}
                                         />
                                     </TabsContent>
-                                    <TabsContent value="invoices">
-                                        <TabsContent value="invoices">
-                                            <InvoiceTable
-                                                columns={invoice_columns}
-                                                data={invoiceInvoices}
-                                            />
-                                        </TabsContent>
-                                    </TabsContent>
-                                </Tabs>
-                            </div>
+                                </TabsContent>
+                            </Tabs>
                         </div>
                     </div>
                 </div>

@@ -32,7 +32,10 @@ services:
         image: 'ngrok/ngrok:alpine'
         environment:
             NGROK_AUTHTOKEN: '${NGROK_AUTHTOKEN}' 
-        command: 'http laravel.test:80'
+            NGROK_REGION: 'global'                    
+            NGROK_PORT: 'web:80'                  
+            NGROK_DOMAIN: 'lionfish-helpful-satyr.ngrok-free.app'
+        command: 'http --domain=lionfish-helpful-satyr.ngrok-free.app laravel.test:80'
         ports:
             - '4040:4040'
         networks:

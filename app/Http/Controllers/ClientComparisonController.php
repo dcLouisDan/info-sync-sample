@@ -5,29 +5,24 @@ namespace App\Http\Controllers;
 use App\Services\NinjaService;
 use App\Services\QuickbaseService;
 use App\Utils\StringUtils;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
-use InvoiceNinja\Sdk\InvoiceNinja;
 
 class ClientComparisonController extends Controller
 {
     public function showComparison()
     {
-        // Fetch clients from Quickbase
-        $quickbaseClients = $this->fetchQuickbaseClients();
-        $quickbaseInvoices = $this->fetchQuickbaseInvoices();
-
-        // Fetch clients from Invoice Ninja
-        $invoiceClients = $this->fetchInvoiceNinjaClients();
-        $invoiceInvoices = $this->fetchInvoiceNinjaInvoices();
-
+        $quickbaseClients = $this->parseQuickbaseResponse($this->fetchQuickbaseClients());
+        $invoiceClients = $this->parseNinjaResponse($this->fetchInvoiceNinjaClients());
+        $quickbaseInvoices = $this->parseQuickbaseResponse($this->fetchQuickbaseInvoices());
+        $invoiceInvoices = $this->parseNinjaInvoiceResponse($this->fetchInvoiceNinjaInvoices());
+        $inconsistencies = $this->findClientInconsistencies($quickbaseClients, $invoiceClients);
+        $inconsistencies2 = $this->findClientInconsistencies($invoiceClients, $quickbaseClients);
         return Inertia::render('Dashboard', [
-            'quickbaseClients' => $this->parseQuickbaseResponse($quickbaseClients),
-            'invoiceClients' => $this->parseNinjaResponse($invoiceClients),
-            'quickbaseInvoices' => $this->parseQuickbaseResponse($quickbaseInvoices),
-            'invoiceInvoices' => $this->parseNinjaInvoiceResponse($invoiceInvoices),
-            'ninjaInvoices' => $invoiceInvoices['data']
+            'quickbaseClients' => $quickbaseClients,
+            'invoiceClients' => $invoiceClients,
+            'quickbaseInvoices' => $quickbaseInvoices,
+            'invoiceInvoices' => $invoiceInvoices,
+            'inconsistencies' => [$inconsistencies, $inconsistencies2]
         ]);
     }
 
@@ -109,5 +104,55 @@ class ClientComparisonController extends Controller
         $qb = new QuickbaseService();
 
         return $qb->fetchInvoices();
+    }
+
+    /**
+     * Compare two arrays of client records and find inconsistencies
+     *
+     * @param array $array1
+     * @param array $array2
+     * @return array
+     */
+
+    private function findClientInconsistencies(array $array1, array $array2): array
+    {
+        $inconsistencies = [];
+
+        // Convert array2 to an associative array keyed by 'id' for efficient lookup
+        $array2Assoc = [];
+        foreach ($array2 as $client) {
+            $array2Assoc[$client['number']] = $client;
+        }
+
+        // Loop through each client in array1
+        foreach ($array1 as $client1) {
+            $clientId = $client1['number'];
+
+            // Check if the client exists in array2
+            if (isset($array2Assoc[$clientId])) {
+                $client2 = $array2Assoc[$clientId];
+
+                // Compare fields between the two records
+                $differences = array_diff_assoc($client1, $client2);
+
+                // If there are any differences, log them
+                if (!empty($differences)) {
+                    $inconsistencies[$clientId] = [
+                        'array1' => $client1,
+                        'array2' => $client2,
+                        'differences' => $differences
+                    ];
+                }
+            } else {
+                // If the client does not exist in array2, mark it as missing
+                $inconsistencies[$clientId] = [
+                    'array1' => $client1,
+                    'array2' => null,
+                    'differences' => ['Client missing:' => $client1['clientName']]
+                ];
+            }
+        }
+
+        return $inconsistencies;
     }
 }
