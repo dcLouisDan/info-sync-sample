@@ -13,15 +13,11 @@ class ClientComparisonController extends Controller
     {
         $quickbaseClients = $this->parseQuickbaseResponse($this->fetchQuickbaseClients());
         $invoiceClients = $this->parseNinjaResponse($this->fetchInvoiceNinjaClients());
-        $quickbaseInvoices = $this->parseQuickbaseResponse($this->fetchQuickbaseInvoices());
-        $invoiceInvoices = $this->parseNinjaInvoiceResponse($this->fetchInvoiceNinjaInvoices());
         $inconsistencies = $this->findClientInconsistencies($quickbaseClients, $invoiceClients);
         $inconsistencies2 = $this->findClientInconsistencies($invoiceClients, $quickbaseClients);
         return Inertia::render('Dashboard', [
             'quickbaseClients' => $quickbaseClients,
             'invoiceClients' => $invoiceClients,
-            'quickbaseInvoices' => $quickbaseInvoices,
-            'invoiceInvoices' => $invoiceInvoices,
             'inconsistencies' => [$inconsistencies, $inconsistencies2]
         ]);
     }
@@ -48,35 +44,16 @@ class ClientComparisonController extends Controller
         $clientData = [];
         foreach ($response['data'] as $item) {
             $client = [
-                "number" => $item['number'],
-                "clientName" => $item['name'],
-                "contactName" => $item['contacts'][0]['first_name'] . " " . $item['contacts'][0]['last_name'],
-                "email" => $item['contacts'][0]['email'],
+                "userid" => $item['number'],
+                "customer" => $item['contacts'][0]['last_name'] . ", " . $item['contacts'][0]['first_name'],
+                "address" => $item["address1"] . " " . $item['address2'] . ", " . $item['city'] . ", " . $item['state'] . " " . $item['postal_code'] . " Philippines",
+                "mobileNumber" => $item['phone'],
             ];
 
             $clientData[] = $client;
         }
 
         return $clientData;
-    }
-
-    private function parseNinjaInvoiceResponse(array $response)
-    {
-        $invoiceData = [];
-        foreach ($response['data'] as $item) {
-            $invoice = [
-                "invoiceNumber" => $item['number'],
-                "clientNumber" => $item['client']['number'] ?? 'Unknown',
-                "clientName" => $item['client']['name'] ?? 'Unknown',
-                "item" => $item["line_items"][0]['product_key'],
-                "description" => $item["line_items"][0]['product_key'],
-                "amount" => $item["line_items"][0]['cost'],
-            ];
-
-            $invoiceData[] = $invoice;
-        }
-
-        return $invoiceData;
     }
 
     public function fetchQuickbaseClients()
@@ -88,23 +65,10 @@ class ClientComparisonController extends Controller
     private function fetchInvoiceNinjaClients()
     {
         $ninja = NinjaService::getInstance();
-        $clients = $ninja->clients->all();
+        $clients = $ninja->clients->all(["status" => "active"]);
         return $clients;
     }
 
-    private function fetchInvoiceNinjaInvoices()
-    {
-        $ninja = NinjaService::getInstance();
-        $clients = $ninja->invoices->all(['status' => 'active', 'include' => 'client']);
-        return $clients;
-    }
-
-    private function fetchQuickbaseInvoices()
-    {
-        $qb = new QuickbaseService();
-
-        return $qb->fetchInvoices();
-    }
 
     /**
      * Compare two arrays of client records and find inconsistencies
@@ -121,12 +85,14 @@ class ClientComparisonController extends Controller
         // Convert array2 to an associative array keyed by 'id' for efficient lookup
         $array2Assoc = [];
         foreach ($array2 as $client) {
-            $array2Assoc[$client['number']] = $client;
+            $key = $client['number'] ?? $client['userid'];
+            $array2Assoc[$key] = $client;
         }
 
         // Loop through each client in array1
         foreach ($array1 as $client1) {
-            $clientId = $client1['number'];
+            // dd($client1);
+            $clientId = $client1['number'] ?? $client1['userid'];
 
             // Check if the client exists in array2
             if (isset($array2Assoc[$clientId])) {
@@ -148,7 +114,7 @@ class ClientComparisonController extends Controller
                 $inconsistencies[$clientId] = [
                     'array1' => $client1,
                     'array2' => null,
-                    'differences' => ['Client missing:' => $client1['clientName']]
+                    'differences' => ['Client missing:' => $client1['customer']]
                 ];
             }
         }

@@ -13,19 +13,19 @@ export type Client = {
 
 export const columns: ColumnDef<Client>[] = [
     {
-        accessorKey: "number",
+        accessorKey: "userid",
         header: "Number",
     },
     {
-        accessorKey: "clientName",
+        accessorKey: "customer",
         header: "Client Name",
     },
     {
-        accessorKey: "contactName",
-        header: "Contact Name",
+        accessorKey: "address",
+        header: "Address",
     },
     {
-        accessorKey: "email",
-        header: "Email",
+        accessorKey: "mobileNumber",
+        header: "Phone",
     },
 ];

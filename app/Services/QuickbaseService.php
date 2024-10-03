@@ -55,7 +55,7 @@ class QuickbaseService
   {
     $body = [
       'from' => $this->tables["clients"],
-      'select' => [6, 7, 8, 11]  // Replace with field IDs
+      'select' => [6, 7, 15, 14]  // Replace with field IDs
     ];
 
     return $this->makeRequest('records/query', 'POST', $body);
@@ -100,28 +100,6 @@ class QuickbaseService
     return $this->makeRequest('records/query', 'POST', $body);
   }
 
-  /**
-   * Update an existing client in Quickbase
-   * 
-   * @param string $clientId
-   * @param array $clientData
-   * @return array
-   */
-  public function updateClient($clientId, array $clientData)
-  {
-    $body = [
-      'to' => $this->tables["clients"],
-      'data' => [
-        [
-          'recordId' => $clientId,
-          'fields' => $clientData
-        ]
-      ]
-    ];
-
-    return $this->makeRequest('records', 'PUT', $body);
-  }
-
   public function insertInvoice(array $invoiceData)
   {
     $clientRecord = $this->fetchClientRecordId($invoiceData['clientNumber']);
@@ -158,18 +136,6 @@ class QuickbaseService
     ];
 
     return $this->makeRequest('records', 'POST', $body);
-  }
-
-  /**
-   * Handle webhook data for client creation and update Invoice Ninja
-   * 
-   * @param array $webhookData
-   * @return void
-   */
-  public function handleWebhookData(array $webhookData)
-  {
-    // Parse webhook data and sync with Invoice Ninja or other services
-    // Implement your data sync logic here
   }
 
   public function insertPayment(array $paymentData)
