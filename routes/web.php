@@ -43,7 +43,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('/webhook/quickbase/client', [QuickbaseWebhookController::class, 'handle']);
-Route::post('/webhook/ninja/invoice', [InvoiceNinjaWebhookController::class, 'handle'])->middleware(LogRequestResponse::class);
+Route::post('/webhook/ninja/invoice', [InvoiceNinjaWebhookController::class, 'invoice'])->middleware(LogRequestResponse::class);
+Route::post('/webhook/ninja/payment', [InvoiceNinjaWebhookController::class, 'payment'])->middleware(LogRequestResponse::class);
 
 
 

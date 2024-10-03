@@ -14,27 +14,20 @@ class StringUtils
 
   public static function separateName($fullName)
   {
-    // Trim any extra spaces
-    $fullName = trim($fullName);
+    // Split the string at the comma and trim any extra whitespace
+    $parts = explode(',', $fullName);
 
-    // Split the full name by spaces
-    $nameParts = explode(' ', $fullName);
-
-    // Handle cases where the name has only one part
-    if (count($nameParts) == 1) {
-      return [
-        'first_name' => $nameParts[0],
-        'last_name' => ''
-      ];
+    // Assign the last name and first name, trim spaces for each part
+    $last_name = trim($parts[0]);
+    $first_name = "";
+    if (count($parts) > 1) {
+      $first_name = trim($parts[1]);
     }
 
-    // Get the first name and last name
-    $firstName = array_shift($nameParts);
-    $lastName = implode(' ', $nameParts); // Join the remaining parts as last name
-
+    // Return an associative array
     return [
-      'first_name' => $firstName,
-      'last_name' => $lastName
+      'first_name' => $first_name,
+      'last_name' => $last_name
     ];
   }
 }

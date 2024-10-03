@@ -161,6 +161,38 @@ function NewNinjaClientForm() {
     );
 }
 
+function InconsistenciesCard({ inconsistencies }: { inconsistencies: any }) {
+    return (
+        <div className="bg-destructive text-white px-6 py-4 overflow-hidden shadow-sm sm:rounded-lg">
+            <h1>Inconsistencies:</h1>
+            <ul className="list-disc ms-4">
+                {Object.keys(inconsistencies).map((item) => {
+                    return (
+                        <li key={item}>
+                            {Object.keys(
+                                inconsistencies[item]["differences"]
+                            ).map((diff, index) => {
+                                if (typeof diff === "string") {
+                                    return (
+                                        <div key={index}>
+                                            {item} : {diff} :{" "}
+                                            {
+                                                inconsistencies[item][
+                                                    "differences"
+                                                ][diff]
+                                            }
+                                        </div>
+                                    );
+                                }
+                            })}
+                        </li>
+                    );
+                })}
+            </ul>
+        </div>
+    );
+}
+
 export default function Dashboard({
     quickbaseClients,
     invoiceClients,
@@ -174,6 +206,8 @@ export default function Dashboard({
 
     // console.log(quickbaseClients);
     console.log(inconsistencies);
+    const quickbaseInconsistencies = inconsistencies[1];
+    const ninjaInconcistencies = inconsistencies[0];
     return (
         <AuthenticatedLayout
             header={
@@ -193,51 +227,6 @@ export default function Dashboard({
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 grid grid-cols-2 gap-2">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 grid gap-4">
-                            {inconsistencies[0].length != 0 && (
-                                <div className="bg-destructive text-white px-6 py-4 overflow-hidden shadow-sm sm:rounded-lg">
-                                    <h1>Inconsistencies:</h1>
-                                    <ul className="list-disc">
-                                        {Object.keys(inconsistencies[1]).map(
-                                            (item) => {
-                                                return (
-                                                    <li key={item}>
-                                                        {Object.keys(
-                                                            inconsistencies[1][
-                                                                item
-                                                            ]["differences"]
-                                                        ).map((diff, index) => {
-                                                            if (
-                                                                typeof diff ===
-                                                                "string"
-                                                            ) {
-                                                                return (
-                                                                    <div
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                    >
-                                                                        {item} :{" "}
-                                                                        {diff} :{" "}
-                                                                        {
-                                                                            inconsistencies[1][
-                                                                                item
-                                                                            ][
-                                                                                "differences"
-                                                                            ][
-                                                                                diff
-                                                                            ]
-                                                                        }
-                                                                    </div>
-                                                                );
-                                                            }
-                                                        })}
-                                                    </li>
-                                                );
-                                            }
-                                        )}
-                                    </ul>
-                                </div>
-                            )}
                             <h1 className="text-center font-bold">Quickbase</h1>
                             {/* <QBInvoiceForm /> */}
                             <Tabs defaultValue="clients">
@@ -250,6 +239,13 @@ export default function Dashboard({
                                     </TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="clients">
+                                    {quickbaseInconsistencies.length != 0 && (
+                                        <InconsistenciesCard
+                                            inconsistencies={
+                                                quickbaseInconsistencies
+                                            }
+                                        />
+                                    )}
                                     <DataTable
                                         columns={columns}
                                         data={quickbaseClients}
@@ -266,42 +262,6 @@ export default function Dashboard({
                     </div>
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 grid gap-4">
-                            {inconsistencies[1].length != 0 && (
-                                <div className="bg-destructive text-white p-6 overflow-hidden shadow-sm sm:rounded-lg">
-                                    <h1>Inconsistencies:</h1>
-                                    <ul className="list-disc">
-                                        {Object.keys(inconsistencies[0]).map(
-                                            (item) => {
-                                                return (
-                                                    <li key={item}>
-                                                        {Object.keys(
-                                                            inconsistencies[0][
-                                                                item
-                                                            ]["differences"]
-                                                        ).map((diff, index) => {
-                                                            return (
-                                                                <div
-                                                                    key={index}
-                                                                >
-                                                                    {item} :{" "}
-                                                                    {diff} :{" "}
-                                                                    {
-                                                                        inconsistencies[0][
-                                                                            item
-                                                                        ][
-                                                                            "differences"
-                                                                        ][diff]
-                                                                    }
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </li>
-                                                );
-                                            }
-                                        )}
-                                    </ul>
-                                </div>
-                            )}
                             <h1 className="text-center font-bold">
                                 Invoice Ninja
                             </h1>
@@ -315,6 +275,13 @@ export default function Dashboard({
                                     </TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="clients">
+                                    {ninjaInconcistencies.length != 0 && (
+                                        <InconsistenciesCard
+                                            inconsistencies={
+                                                ninjaInconcistencies
+                                            }
+                                        />
+                                    )}
                                     <DataTable
                                         columns={columns}
                                         data={invoiceClients}

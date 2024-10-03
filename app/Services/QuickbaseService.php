@@ -12,8 +12,8 @@ class QuickbaseService
   private $userToken;
   private $headers;
   private $tables = [
-    "clients" => "buiq4dven",
-    "invoices" => "buiq4exu8"
+    "clients" => "bujf4sbzh",
+    "payments" => "bujf53sz8"
   ];
 
   public function __construct()
@@ -93,9 +93,9 @@ class QuickbaseService
       'from' => $this->tables['clients'],
       'select' => [
         3,
-        11
+        15
       ],
-      'where' => "{11.CT.'$clientNumber'}"
+      'where' => "{15.CT.'$clientNumber'}"
     ];
     return $this->makeRequest('records/query', 'POST', $body);
   }
@@ -170,5 +170,39 @@ class QuickbaseService
   {
     // Parse webhook data and sync with Invoice Ninja or other services
     // Implement your data sync logic here
+  }
+
+  public function insertPayment(array $paymentData)
+  {
+    $clientRecord = $this->fetchClientRecordId($paymentData['clientNumber']);
+    Log::info("Client data: " . json_encode($clientRecord, true));
+    $clientRecordID = $clientRecord['data'][0]["3"]["value"];
+
+    $body = [
+      'to' => $this->tables["payments"],
+      'data' => [
+        [
+          '6' => [
+            "value" => $paymentData['datePaid']
+          ],
+          '7' => [
+            "value" => $paymentData['amountPaid']
+          ],
+          "8" => [
+            'value' => $paymentData['billingPeriod']
+          ],
+          "9" => [
+            "value" => $paymentData['paymentMode']
+          ],
+          "13" => [
+            "value" => $paymentData['officialReceipt']
+          ],
+          "14" => [
+            "value" => $clientRecordID
+          ]
+        ]
+      ]
+    ];
+    return $this->makeRequest('records', 'POST', $body);
   }
 }
