@@ -20,7 +20,7 @@ Route::get('/', function () {
     ]);
 });
 
-// Route::get('/', [ClientComparisonController::class, 'showComparison'])->name('dashboard');
+Route::get('/', [ClientComparisonController::class, 'showComparison'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -1,6 +1,6 @@
 import { columns } from "@/components/client_table/columns";
 import { DataTable } from "@/components/client_table/data-table";
-import GuestLayout from "@/Layouts/GuestLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { PageProps } from "@/types";
 import { FlashMessages } from "@/types/global";
 import { Head, usePage } from "@inertiajs/react";
@@ -57,7 +57,7 @@ export default function Dashboard({
     const quickbaseInconsistencies = inconsistencies[1];
     const ninjaInconcistencies = inconsistencies[0];
     return (
-        <GuestLayout>
+        <AuthenticatedLayout>
             <Head title="Dashboard" />
             {/* Display Success Message */}
             {success && <div className="alert alert-success">{success}</div>}
@@ -126,6 +126,6 @@ export default function Dashboard({
                     </div>
                 </div>
             </div>
-        </GuestLayout>
+        </AuthenticatedLayout>
     );
 }
