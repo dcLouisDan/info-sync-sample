@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuickbaseAPIController;
 use App\Http\Controllers\QuickbaseWebhookController;
 use App\Http\Middleware\LogRequestResponse;
+use App\Services\QuickbaseService;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,8 +22,12 @@ Route::get('/', function () {
 });
 
 Route::get('/', [ClientComparisonController::class, 'showComparison'])->middleware(['auth'])->name('dashboard');
-Route::get('/service-report', function() {
-    return Inertia::render('ServiceReport');
+Route::get('/service-report', function () {
+    $qb = new QuickbaseService();
+    $clientList = $qb->getParsedClientList();
+    return Inertia::render('ServiceReport', [
+        "clientList" => $clientList
+    ]);
 })->name('serviceReport');
 
 Route::middleware('auth')->group(function () {
