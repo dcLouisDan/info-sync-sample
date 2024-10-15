@@ -1,5 +1,7 @@
 import { columns } from "@/components/client_table/columns";
+import { columns as paymentColumns } from "@/components/payments_table/columns";
 import { DataTable } from "@/components/client_table/data-table";
+import { DataTable as PaymentTable } from "@/components/payments_table/data-table";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { PageProps } from "@/types";
 import { FlashMessages } from "@/types/global";
@@ -10,6 +12,8 @@ type Props = {
     quickbaseClients: Array<any>;
     invoiceClients: Array<any>;
     inconsistencies: Array<any>;
+    quickbasePayments: Array<any>;
+    ninjaPayments: Array<any>;
 };
 
 function InconsistenciesCard({ inconsistencies }: { inconsistencies: any }) {
@@ -48,14 +52,18 @@ export default function Dashboard({
     quickbaseClients,
     invoiceClients,
     inconsistencies,
+    quickbasePayments,
+    ninjaPayments,
 }: Props) {
     const { props } = usePage<PageProps & { flash: FlashMessages }>();
     const { success, error } = props.flash ?? { success: null, error: null };
 
     // console.log(quickbaseClients);
-    console.log(inconsistencies);
     const quickbaseInconsistencies = inconsistencies[1];
     const ninjaInconcistencies = inconsistencies[0];
+
+    console.log(quickbasePayments);
+    console.log(ninjaPayments);
     return (
         <AuthenticatedLayout>
             <Head title="Dashboard" />
@@ -76,6 +84,9 @@ export default function Dashboard({
                                     <TabsTrigger value="clients">
                                         Clients
                                     </TabsTrigger>
+                                    <TabsTrigger value="payments">
+                                        Payments
+                                    </TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="clients">
                                     {quickbaseInconsistencies.length != 0 && (
@@ -90,7 +101,12 @@ export default function Dashboard({
                                         data={quickbaseClients}
                                     />
                                 </TabsContent>
-                                <TabsContent value="invoices"></TabsContent>
+                                <TabsContent value="payments">
+                                    <PaymentTable
+                                        columns={paymentColumns}
+                                        data={quickbasePayments}
+                                    />
+                                </TabsContent>
                             </Tabs>
                         </div>
                     </div>
@@ -103,6 +119,9 @@ export default function Dashboard({
                                 <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="clients">
                                         Clients
+                                    </TabsTrigger>
+                                    <TabsTrigger value="payments">
+                                        Payments
                                     </TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="clients">
@@ -118,8 +137,11 @@ export default function Dashboard({
                                         data={invoiceClients}
                                     />
                                 </TabsContent>
-                                <TabsContent value="invoices">
-                                    <TabsContent value="invoices"></TabsContent>
+                                <TabsContent value="payments">
+                                    <PaymentTable
+                                        columns={paymentColumns}
+                                        data={ninjaPayments}
+                                    />
                                 </TabsContent>
                             </Tabs>
                         </div>

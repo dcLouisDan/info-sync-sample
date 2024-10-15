@@ -81,6 +81,9 @@ class InvoiceNinjaWebhookController extends Controller
 
     private function getBillingPeriod(string $dueDate)
     {
+        if ($dueDate === "") {
+            return "";
+        }
         $months = [
             1  => 'January',
             2  => 'February',

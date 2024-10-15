@@ -20,7 +20,10 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/', [ClientComparisonController::class, 'showComparison'])->name('dashboard');
+Route::get('/', [ClientComparisonController::class, 'showComparison'])->middleware(['auth'])->name('dashboard');
+Route::get('/service-report', function() {
+    return Inertia::render('ServiceReport');
+})->name('serviceReport');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -6,19 +6,30 @@ use App\Services\NinjaService;
 use App\Services\QuickbaseService;
 use App\Utils\StringUtils;
 use Inertia\Inertia;
+use InvoiceNinja\Sdk\Endpoints\Clients;
 
 class ClientComparisonController extends Controller
 {
     public function showComparison()
     {
-        $quickbaseClients = $this->parseQuickbaseResponse($this->fetchQuickbaseClients());
-        $invoiceClients = $this->parseNinjaResponse($this->fetchInvoiceNinjaClients());
+        $qb = new QuickbaseService();
+
+        $quickbaseClients = $this->parseQuickbaseResponse($qb->fetchClients());
+        $invoiceClients = $this->parseNinjaClientResponse($this->fetchInvoiceNinjaClients());
         $inconsistencies = $this->findClientInconsistencies($quickbaseClients, $invoiceClients);
         $inconsistencies2 = $this->findClientInconsistencies($invoiceClients, $quickbaseClients);
+
+
+        $quickbasePayments = $this->parseQuickbaseResponse($qb->getPayments());
+        $ninjaPayments = $this->parseNinjaPaymentResponse($this->fetchInvoiceNinjaPayments());
+        $paymentInconsistencies = $this->findPaymentInconsistencies($quickbasePayments, $ninjaPayments);
         return Inertia::render('Dashboard', [
             'quickbaseClients' => $quickbaseClients,
             'invoiceClients' => $invoiceClients,
-            'inconsistencies' => [$inconsistencies, $inconsistencies2]
+            'inconsistencies' => [$inconsistencies, $inconsistencies2],
+            'quickbasePayments' => $quickbasePayments,
+            'ninjaPayments' => $ninjaPayments,
+            // 'ninjaPayments' => $this->fetchInvoiceNinjaPayments(),
         ]);
     }
 
@@ -39,7 +50,7 @@ class ClientComparisonController extends Controller
         return $clientData;
     }
 
-    private function parseNinjaResponse(array $response)
+    private function parseNinjaClientResponse(array $response)
     {
         $clientData = [];
         foreach ($response['data'] as $item) {
@@ -56,16 +67,36 @@ class ClientComparisonController extends Controller
         return $clientData;
     }
 
-    public function fetchQuickbaseClients()
+    private function parseNinjaPaymentResponse(array $response)
     {
-        $qb = new QuickbaseService();
-        return $qb->fetchClients();
+        $paymentData = [];
+        foreach ($response['data'] as $item) {
+            $payment = [
+                "datePaid" => $item['date'],
+                "amountPaid" => $item['amount'],
+                "officialReceipt" => "OR" . $item['transaction_reference'],
+                "customer" => $item['client']['contacts'][0]['last_name'] . ", " . $item['client']['contacts'][0]['first_name'],
+                "planName" => $item['invoices'][0]['line_items'][0]['product_key']
+            ];
+
+            $paymentData[] = $payment;
+        }
+
+        return $paymentData;
     }
+
 
     private function fetchInvoiceNinjaClients()
     {
         $ninja = NinjaService::getInstance();
         $clients = $ninja->clients->all(["status" => "active"]);
+        return $clients;
+    }
+
+    private function fetchInvoiceNinjaPayments()
+    {
+        $ninja = NinjaService::getInstance();
+        $clients = $ninja->payments->all(['include' => 'client,invoices', "is_deleted" => false]);
         return $clients;
     }
 
@@ -115,6 +146,50 @@ class ClientComparisonController extends Controller
                     'array1' => $client1,
                     'array2' => null,
                     'differences' => ['Client missing:' => $client1['customer']]
+                ];
+            }
+        }
+
+        return $inconsistencies;
+    }
+
+    private function findPaymentInconsistencies(array $array1, array $array2): array
+    {
+        $inconsistencies = [];
+
+        // Convert array2 to an associative array keyed by 'id' for efficient lookup
+        $array2Assoc = [];
+        foreach ($array2 as $record) {
+            $key = $record['officialReceipt'];
+            $array2Assoc[$key] = $record;
+        }
+
+        // Loop through each record in array1
+        foreach ($array1 as $record1) {
+            // dd($record1);
+            $recordId = $record1['officialReceipt'];
+
+            // Check if the record exists in array2
+            if (isset($array2Assoc[$recordId])) {
+                $record2 = $array2Assoc[$recordId];
+
+                // Compare fields between the two records
+                $differences = array_diff_assoc($record1, $record2);
+
+                // If there are any differences, log them
+                if (!empty($differences)) {
+                    $inconsistencies[$recordId] = [
+                        'array1' => $record1,
+                        'array2' => $record2,
+                        'differences' => $differences
+                    ];
+                }
+            } else {
+                // If the record does not exist in array2, mark it as missing
+                $inconsistencies[$recordId] = [
+                    'array1' => $record1,
+                    'array2' => null,
+                    'differences' => ['record missing:' => $record1['customer']]
                 ];
             }
         }

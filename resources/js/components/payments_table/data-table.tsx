@@ -55,29 +55,29 @@ export function DataTable<TData, TValue>({
         <div>
             <div className="flex items-center py-4 gap-2">
                 <Input
-                    placeholder="Filter number..."
+                    placeholder="Filter Customer..."
                     value={
                         (table
-                            .getColumn("invoiceNumber")
+                            .getColumn("customer")
                             ?.getFilterValue() as string) ?? ""
                     }
                     onChange={(event) =>
                         table
-                            .getColumn("invoiceNumber")
+                            .getColumn("customer")
                             ?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm"
                 />
                 <Input
-                    placeholder="Filter name..."
+                    placeholder="Filter Official Receipt..."
                     value={
                         (table
-                            .getColumn("clientName")
+                            .getColumn("officialReceipt")
                             ?.getFilterValue() as string) ?? ""
                     }
                     onChange={(event) =>
                         table
-                            .getColumn("clientName")
+                            .getColumn("officialReceipt")
                             ?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm"

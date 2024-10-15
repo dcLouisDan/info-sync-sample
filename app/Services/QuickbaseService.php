@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Utils\StringUtils;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -87,12 +88,40 @@ class QuickbaseService
     return $this->makeRequest('records', 'POST', $body);
   }
 
-  public function fetchClientRecordId(string $clientNumber)
+  private function parseQuickbaseResponse(array $body)
+  {
+    $data = $body['data'];
+    $fields = $body['fields'];
+    $clientData = [];
+    foreach ($data as $item) {
+      $client = [];
+      foreach ($fields as $field) {
+        $label = StringUtils::toCamelCase($field['label']);
+        $client[$label] = $item[$field['id']]['value'];
+      }
+      $clientData[] = $client;
+    }
+
+    return $clientData;
+  }
+
+  public function getParsedClientRecord(string $clientNumber)
+  {
+    $clientRecord = $this->fetchClientRecord($clientNumber);
+    return $this->parseQuickbaseResponse($clientRecord);
+  }
+
+  private function fetchClientRecord(string $clientNumber)
   {
     $body = [
       'from' => $this->tables['clients'],
       'select' => [
         3,
+        6,
+        7,
+        14,
+        30,
+        31,
         15
       ],
       'where' => "{15.CT.'$clientNumber'}"
@@ -102,7 +131,7 @@ class QuickbaseService
 
   public function insertInvoice(array $invoiceData)
   {
-    $clientRecord = $this->fetchClientRecordId($invoiceData['clientNumber']);
+    $clientRecord = $this->fetchClientRecord($invoiceData['clientNumber']);
     Log::info("Client data: " . json_encode($clientRecord, true));
     $clientRecordID = $clientRecord['data'][0]["3"]["value"];
 
@@ -138,9 +167,25 @@ class QuickbaseService
     return $this->makeRequest('records', 'POST', $body);
   }
 
+  public function getPayments()
+  {
+    $body = [
+      "from" => $this->tables['payments'],
+      "select" => [
+        6,
+        7,
+        13,
+        15,
+        17,
+      ]
+    ];
+
+    return $this->makeRequest('records/query', 'POST', $body);
+  }
+
   public function insertPayment(array $paymentData)
   {
-    $clientRecord = $this->fetchClientRecordId($paymentData['clientNumber']);
+    $clientRecord = $this->fetchClientRecord($paymentData['clientNumber']);
     Log::info("Client data: " . json_encode($clientRecord, true));
     $clientRecordID = $clientRecord['data'][0]["3"]["value"];
 

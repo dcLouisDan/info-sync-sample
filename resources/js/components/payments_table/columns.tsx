@@ -14,23 +14,23 @@ export type Invoice = {
 
 export const columns: ColumnDef<Invoice>[] = [
     {
-        accessorKey: "invoiceNumber",
-        header: "Invoice Number",
+        accessorKey: "datePaid",
+        header: "Date Paid",
     },
     {
-        accessorKey: "clientName",
-        header: "Client Name",
+        accessorKey: "amountPaid",
+        header: "Amount Paid",
     },
     {
-        accessorKey: "clientNumber",
-        header: "Client Number",
+        accessorKey: "customer",
+        header: "Customer",
     },
     {
-        accessorKey: "item",
-        header: "Item",
+        accessorKey: "officialReceipt",
+        header: "Official Receipt",
     },
     {
-        accessorKey: "amount",
-        header: "Amount",
+        accessorKey: "planName",
+        header: "Plan Name",
     },
 ];
