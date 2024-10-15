@@ -70,6 +70,7 @@ export default function ServiceReportDocument({
     contactNumber,
     contactEmail,
     jobOrderDescription,
+    date,
 }: {
     accountName?: string;
     address?: string;
@@ -77,6 +78,7 @@ export default function ServiceReportDocument({
     contactNumber?: string;
     contactEmail?: string;
     jobOrderDescription?: string;
+    date: Date | undefined;
 }) {
     return (
         <Document>
@@ -99,7 +101,14 @@ export default function ServiceReportDocument({
                     }}
                 >
                     <View style={styles.section}>
-                        <Text style={styles.cell}>DATE:</Text>
+                        {!!date ? (
+                            <Text style={styles.cell}>
+                                DATE: {date?.getMonth() + 1}-{date?.getDate()}-
+                                {date?.getFullYear()}
+                            </Text>
+                        ) : (
+                            <Text style={styles.cell}>DATE:</Text>
+                        )}
                         <View
                             style={{
                                 ...styles.cell,

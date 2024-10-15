@@ -1,4 +1,5 @@
 import { ClientCombobox } from "@/components/ClientCombobox";
+import { DatePicker } from "@/components/DatePicker";
 import ServiceReportDocument from "@/components/ServiceReportDocument";
 import { Textarea } from "@/components/ui/textarea";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
@@ -13,11 +14,14 @@ export default function ServiceReport({
     console.log(clientList);
     const [value, setValue] = useState("");
     const [jobOrder, setJobOrder] = useState("");
+    const today = new Date();
+    const [date, setDate] = useState<Date | undefined>(today);
     const clientData =
         value !== ""
             ? clientList.find((client) => client?.customer == value)
             : null;
     console.log(clientData);
+    const gridLayout = value !== "" ? "xl:grid-cols-2" : "";
     return (
         <>
             <Head>
@@ -28,7 +32,12 @@ export default function ServiceReport({
                     <h1 className="font-bold text-3xl py-4">
                         Generate Service Report
                     </h1>
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 px-8 justify-center">
+                    <div
+                        className={
+                            "grid grid-cols-1 gap-4 px-8 justify-center " +
+                            gridLayout
+                        }
+                    >
                         <div className="flex flex-col items-center gap-4">
                             <div className="flex flex-col gap-4">
                                 <div className="flex gap-2 items-center">
@@ -38,6 +47,10 @@ export default function ServiceReport({
                                         value={value}
                                         clientList={clientList}
                                     />
+                                </div>
+                                <div className="flex gap-2 items-center">
+                                    <p>Date:</p>
+                                    <DatePicker date={date} setDate={setDate} />
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <p>Job Order Description:</p>
@@ -62,6 +75,7 @@ export default function ServiceReport({
                                         contactNumber={clientData.mobileNumber}
                                         contactEmail={clientData.emailAddress}
                                         jobOrderDescription={jobOrder}
+                                        date={date}
                                     />
                                 </PDFViewer>
                             </div>
