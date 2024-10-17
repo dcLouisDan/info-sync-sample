@@ -21,7 +21,10 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/', [ClientComparisonController::class, 'showComparison'])->middleware(['auth'])->name('dashboard');
+Route::get('/', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth'])->name('dashboard');
+
 Route::get('/service-report', function () {
     $qb = new QuickbaseService();
     $clientList = $qb->getParsedClientList();
@@ -40,16 +43,8 @@ Route::middleware('auth')->group(function () {
     // Fetch all clients
     Route::get('/quickbase/clients', [QuickbaseAPIController::class, 'fetchClients']);
 
-    // Insert a new client
-    Route::post('/quickbase/clients', [QuickbaseAPIController::class, 'insertClient']);
-
-    // Update an existing client
-    Route::put('/quickbase/clients/{clientId}', [QuickbaseAPIController::class, 'updateClient']);
-
-    // Delete a client
-    Route::delete('/quickbase/clients/{clientId}', [QuickbaseAPIController::class, 'deleteClient']);
+    Route::get('/data-comparison', [ClientComparisonController::class, 'showComparison'])->name('dataComparison');
 });
-
 Route::post('/webhook/quickbase/client', [QuickbaseWebhookController::class, 'handle']);
 Route::post('/webhook/ninja/invoice', [InvoiceNinjaWebhookController::class, 'invoice'])->middleware(LogRequestResponse::class);
 Route::post('/webhook/ninja/payment', [InvoiceNinjaWebhookController::class, 'payment'])->middleware(LogRequestResponse::class);

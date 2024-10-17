@@ -23,7 +23,7 @@ class ClientComparisonController extends Controller
         $quickbasePayments = $this->parseQuickbaseResponse($qb->getPayments());
         $ninjaPayments = $this->parseNinjaPaymentResponse($this->fetchInvoiceNinjaPayments());
         $paymentInconsistencies = $this->findPaymentInconsistencies($quickbasePayments, $ninjaPayments);
-        return Inertia::render('Dashboard', [
+        return Inertia::render('DataComparison', [
             'quickbaseClients' => $quickbaseClients,
             'invoiceClients' => $invoiceClients,
             'inconsistencies' => [$inconsistencies, $inconsistencies2],
@@ -40,8 +40,12 @@ class ClientComparisonController extends Controller
         $clientData = [];
         foreach ($data as $item) {
             $client = [];
+            $exceptions = ['recordId', 'alternateContactName', 'alternateContactNumber'];
             foreach ($fields as $field) {
                 $label = StringUtils::toCamelCase($field['label']);
+                if (in_array($label, $exceptions)) {
+                    continue;
+                }
                 $client[$label] = $item[$field['id']]['value'];
             }
             $clientData[] = $client;
@@ -59,6 +63,7 @@ class ClientComparisonController extends Controller
                 "customer" => $item['contacts'][0]['last_name'] . ", " . $item['contacts'][0]['first_name'],
                 "address" => $item["address1"] . " " . $item['address2'] . ", " . $item['city'] . ", " . $item['state'] . " " . $item['postal_code'] . " Philippines",
                 "mobileNumber" => $item['phone'],
+                "emailAddress" => $item['contacts'][0]['email'],
             ];
 
             $clientData[] = $client;
