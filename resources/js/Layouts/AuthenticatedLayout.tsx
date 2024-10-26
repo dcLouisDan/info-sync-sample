@@ -42,6 +42,16 @@ export default function Authenticated({
                                 {/* <NavLink href={route('dataComparison')} active={route().current('dataComparison')}>
                                     Data Comparison
                                 </NavLink> */}
+                                {user.role == "admin" && (
+                                    <NavLink
+                                        href={route("serviceReport")}
+                                        active={route().current(
+                                            "serviceReport"
+                                        )}
+                                    >
+                                        Users
+                                    </NavLink>
+                                )}
                             </div>
                         </div>
 
