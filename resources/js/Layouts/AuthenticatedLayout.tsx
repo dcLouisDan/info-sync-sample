@@ -5,7 +5,7 @@ import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage } from "@inertiajs/react";
 
-export default function Authenticated({
+export default function AuthenticatedLayout({
     header,
     children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
@@ -44,10 +44,8 @@ export default function Authenticated({
                                 </NavLink> */}
                                 {user.role == "admin" && (
                                     <NavLink
-                                        href={route("serviceReport")}
-                                        active={route().current(
-                                            "serviceReport"
-                                        )}
+                                        href={route("user.index")}
+                                        active={route().current("user.index")}
                                     >
                                         Users
                                     </NavLink>

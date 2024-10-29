@@ -6,6 +6,8 @@ use App\Http\Controllers\InvoiceNinjaWebhookController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuickbaseAPIController;
 use App\Http\Controllers\QuickbaseWebhookController;
+use App\Http\Controllers\UserController;
+use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\LogRequestResponse;
 use App\Services\QuickbaseService;
 use Illuminate\Foundation\Application;
@@ -45,6 +47,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/data-comparison', [ClientComparisonController::class, 'showComparison'])->name('dataComparison');
 });
+
+Route::middleware('auth')->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('user.index');
+    Route::post('/user/create', [UserController::class, 'createUser'])->name('user.create');
+})->middleware(AdminMiddleware::class);
+
+
 Route::post('/webhook/quickbase/client', [QuickbaseWebhookController::class, 'handle']);
 Route::post('/webhook/ninja/invoice', [InvoiceNinjaWebhookController::class, 'invoice'])->middleware(LogRequestResponse::class);
 Route::post('/webhook/ninja/payment', [InvoiceNinjaWebhookController::class, 'payment'])->middleware(LogRequestResponse::class);
