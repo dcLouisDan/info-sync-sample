@@ -18,6 +18,7 @@ declare module "@inertiajs/core" {
 interface FlashMessages {
     success?: string;
     error?: string;
+    message?: string;
 }
 
 interface InertiaPageProps {

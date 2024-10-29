@@ -1,6 +1,6 @@
 "use client";
 
-import { usePage } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "../ui/button";
 import {
@@ -23,6 +23,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -56,8 +58,27 @@ export const columns: ColumnDef<UserRow>[] = [
         cell: ({ row }) => {
             const user = row.original;
             const authUser = usePage().props.auth.user;
+            const { toast } = useToast();
+            const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
+            const {
+                data: formData, // Renamed to formData
+                setData: setFormData, // Renamed to setFormData
+                put: updateUser, // Renamed to updateUser
+                // processing: isCreating, // Renamed to isCreating
+                // errors: formErrors, // Renamed to formErrors
+                reset: resetForm, // Renamed to resetForm
+            } = useForm({
+                name: user.name,
+                email: user.email,
+                password: "",
+                password_confirmation: "",
+                role: user.role,
+            });
             return (
-                <Dialog>
+                <Dialog
+                    open={updateDialogOpen}
+                    onOpenChange={setUpdateDialogOpen}
+                >
                     <DialogTrigger
                         asChild
                         disabled={Number(authUser.id) === Number(user.id)}
@@ -79,7 +100,10 @@ export const columns: ColumnDef<UserRow>[] = [
                                 </Label>
                                 <Input
                                     id="name"
-                                    defaultValue={user.name}
+                                    value={formData.name}
+                                    onChange={(e) =>
+                                        setFormData("name", e.target.value)
+                                    }
                                     className="col-span-3"
                                 />
                             </div>
@@ -89,7 +113,10 @@ export const columns: ColumnDef<UserRow>[] = [
                                 </Label>
                                 <Input
                                     id="email"
-                                    defaultValue={user.email}
+                                    value={formData.email}
+                                    onChange={(e) =>
+                                        setFormData("email", e.target.value)
+                                    }
                                     className="col-span-3"
                                 />
                             </div>
@@ -102,8 +129,33 @@ export const columns: ColumnDef<UserRow>[] = [
                                 </Label>
                                 <Input
                                     id="password"
+                                    value={formData.password}
+                                    onChange={(e) =>
+                                        setFormData("password", e.target.value)
+                                    }
                                     type="password"
                                     placeholder="Enter new password..."
+                                    className="col-span-3"
+                                />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label
+                                    htmlFor="password"
+                                    className="text-right"
+                                >
+                                    Confirm password
+                                </Label>
+                                <Input
+                                    id="password_confirmation"
+                                    value={formData.password_confirmation}
+                                    onChange={(e) =>
+                                        setFormData(
+                                            "password_confirmation",
+                                            e.target.value
+                                        )
+                                    }
+                                    type="password_confirmation"
+                                    placeholder="Confirm new password..."
                                     className="col-span-3"
                                 />
                             </div>
@@ -111,7 +163,12 @@ export const columns: ColumnDef<UserRow>[] = [
                                 <Label htmlFor="email" className="text-right">
                                     Role
                                 </Label>
-                                <Select defaultValue={user.role}>
+                                <Select
+                                    value={formData.role}
+                                    onValueChange={(value) =>
+                                        setFormData("role", value)
+                                    }
+                                >
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Select a role" />
                                     </SelectTrigger>
@@ -130,7 +187,23 @@ export const columns: ColumnDef<UserRow>[] = [
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button type="submit">Save changes</Button>
+                            <Button
+                                type="submit"
+                                onClick={() => {
+                                    updateUser(route("user.update", user.id), {
+                                        onSuccess: () => {
+                                            setUpdateDialogOpen(false);
+                                            resetForm();
+                                            toast({
+                                                description:
+                                                    "User update successfully.",
+                                            });
+                                        },
+                                    });
+                                }}
+                            >
+                                Save changes
+                            </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

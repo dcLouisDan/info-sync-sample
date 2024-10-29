@@ -4,6 +4,7 @@ import Dropdown from "@/Components/Dropdown";
 import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage } from "@inertiajs/react";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function AuthenticatedLayout({
     header,
@@ -191,6 +192,7 @@ export default function AuthenticatedLayout({
             )}
 
             <main className="flex flex-col">{children}</main>
+            <Toaster />
         </div>
     );
 }

@@ -43,6 +43,8 @@ import {
 } from "@/components/ui/select";
 
 import { Input } from "@/components/ui/input";
+import { useForm } from "@inertiajs/react";
+import { useToast } from "@/hooks/use-toast";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -72,10 +74,32 @@ export function UserDataTable<TData, TValue>({
         },
     });
 
+    const [createDialogOpen, setCreateDialogOpen] = React.useState(false);
+
+    const {
+        data: formData, // Renamed to formData
+        setData: setFormData, // Renamed to setFormData
+        post: createUser, // Renamed to createUser
+        // processing: isCreating, // Renamed to isCreating
+        // errors: formErrors, // Renamed to formErrors
+        reset: resetForm, // Renamed to resetForm
+    } = useForm({
+        name: "",
+        email: "",
+        password: "",
+        password_confirmation: "",
+        role: "",
+    });
+
+    const { toast } = useToast();
+
     return (
         <div>
             <div className="flex items-center py-4 gap-2 justify-between">
-                <Dialog>
+                <Dialog
+                    open={createDialogOpen}
+                    onOpenChange={setCreateDialogOpen}
+                >
                     <DialogTrigger asChild>
                         <Button variant="default" className="w-40">
                             Create User
@@ -89,7 +113,7 @@ export function UserDataTable<TData, TValue>({
                                 done.
                             </DialogDescription>
                         </DialogHeader>
-                        <form className="grid gap-4 py-4" action="">
+                        <form className="grid gap-4 py-4">
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="name" className="text-right">
                                     Name
@@ -97,6 +121,10 @@ export function UserDataTable<TData, TValue>({
                                 <Input
                                     name="name"
                                     id="name"
+                                    value={formData.name}
+                                    onChange={(e) =>
+                                        setFormData("name", e.target.value)
+                                    }
                                     className="col-span-3"
                                 />
                             </div>
@@ -107,6 +135,10 @@ export function UserDataTable<TData, TValue>({
                                 <Input
                                     name="email"
                                     id="email"
+                                    value={formData.email}
+                                    onChange={(e) =>
+                                        setFormData("email", e.target.value)
+                                    }
                                     className="col-span-3"
                                 />
                             </div>
@@ -119,6 +151,10 @@ export function UserDataTable<TData, TValue>({
                                 </Label>
                                 <Input
                                     id="password"
+                                    value={formData.password}
+                                    onChange={(e) =>
+                                        setFormData("password", e.target.value)
+                                    }
                                     name="password"
                                     type="password"
                                     className="col-span-3"
@@ -133,6 +169,13 @@ export function UserDataTable<TData, TValue>({
                                 </Label>
                                 <Input
                                     id="confirmPassword"
+                                    value={formData.password_confirmation}
+                                    onChange={(e) =>
+                                        setFormData(
+                                            "password_confirmation",
+                                            e.target.value
+                                        )
+                                    }
                                     name="confirmPassword"
                                     type="password"
                                     className="col-span-3"
@@ -142,7 +185,13 @@ export function UserDataTable<TData, TValue>({
                                 <Label htmlFor="email" className="text-right">
                                     Role
                                 </Label>
-                                <Select name="role">
+                                <Select
+                                    name="role"
+                                    value={formData.role}
+                                    onValueChange={(value) =>
+                                        setFormData("role", value)
+                                    }
+                                >
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Select a role" />
                                     </SelectTrigger>
@@ -161,7 +210,23 @@ export function UserDataTable<TData, TValue>({
                             </div>
                         </form>
                         <DialogFooter>
-                            <Button type="submit">Save changes</Button>
+                            <Button
+                                type="submit"
+                                onClick={() =>
+                                    createUser(route("user.create"), {
+                                        onSuccess: () => {
+                                            setCreateDialogOpen(false);
+                                            resetForm();
+                                            toast({
+                                                description:
+                                                    "User created successfully.",
+                                            });
+                                        },
+                                    })
+                                }
+                            >
+                                Save changes
+                            </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
