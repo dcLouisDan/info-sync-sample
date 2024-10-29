@@ -44,7 +44,6 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { useForm } from "@inertiajs/react";
-import { useToast } from "@/hooks/use-toast";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -81,7 +80,8 @@ export function UserDataTable<TData, TValue>({
         setData: setFormData, // Renamed to setFormData
         post: createUser, // Renamed to createUser
         // processing: isCreating, // Renamed to isCreating
-        // errors: formErrors, // Renamed to formErrors
+        errors: formErrors, // Renamed to formErrors
+        clearErrors: clearFormErrors,
         reset: resetForm, // Renamed to resetForm
     } = useForm({
         name: "",
@@ -90,8 +90,6 @@ export function UserDataTable<TData, TValue>({
         password_confirmation: "",
         role: "",
     });
-
-    const { toast } = useToast();
 
     return (
         <div>
@@ -122,10 +120,12 @@ export function UserDataTable<TData, TValue>({
                                     name="name"
                                     id="name"
                                     value={formData.name}
-                                    onChange={(e) =>
-                                        setFormData("name", e.target.value)
-                                    }
+                                    onChange={(e) => {
+                                        setFormData("name", e.target.value);
+                                        clearFormErrors("name");
+                                    }}
                                     className="col-span-3"
+                                    error={formErrors.name}
                                 />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
@@ -135,10 +135,12 @@ export function UserDataTable<TData, TValue>({
                                 <Input
                                     name="email"
                                     id="email"
+                                    error={formErrors.email}
                                     value={formData.email}
-                                    onChange={(e) =>
-                                        setFormData("email", e.target.value)
-                                    }
+                                    onChange={(e) => {
+                                        setFormData("email", e.target.value);
+                                        clearFormErrors("email");
+                                    }}
                                     className="col-span-3"
                                 />
                             </div>
@@ -151,10 +153,12 @@ export function UserDataTable<TData, TValue>({
                                 </Label>
                                 <Input
                                     id="password"
+                                    error={formErrors.password}
                                     value={formData.password}
-                                    onChange={(e) =>
-                                        setFormData("password", e.target.value)
-                                    }
+                                    onChange={(e) => {
+                                        setFormData("password", e.target.value);
+                                        clearFormErrors("password");
+                                    }}
                                     name="password"
                                     type="password"
                                     className="col-span-3"
@@ -169,13 +173,17 @@ export function UserDataTable<TData, TValue>({
                                 </Label>
                                 <Input
                                     id="confirmPassword"
+                                    error={formErrors.password_confirmation}
                                     value={formData.password_confirmation}
-                                    onChange={(e) =>
+                                    onChange={(e) => {
                                         setFormData(
                                             "password_confirmation",
                                             e.target.value
-                                        )
-                                    }
+                                        );
+                                        clearFormErrors(
+                                            "password_confirmation"
+                                        );
+                                    }}
                                     name="confirmPassword"
                                     type="password"
                                     className="col-span-3"
@@ -188,11 +196,15 @@ export function UserDataTable<TData, TValue>({
                                 <Select
                                     name="role"
                                     value={formData.role}
-                                    onValueChange={(value) =>
-                                        setFormData("role", value)
-                                    }
+                                    onValueChange={(value) => {
+                                        setFormData("role", value);
+                                        clearFormErrors("role");
+                                    }}
                                 >
-                                    <SelectTrigger className="w-[180px]">
+                                    <SelectTrigger
+                                        className="col-span-3"
+                                        error={formErrors.role}
+                                    >
                                         <SelectValue placeholder="Select a role" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -217,10 +229,10 @@ export function UserDataTable<TData, TValue>({
                                         onSuccess: () => {
                                             setCreateDialogOpen(false);
                                             resetForm();
-                                            toast({
-                                                description:
-                                                    "User created successfully.",
-                                            });
+                                            // toast({
+                                            //     description:
+                                            //         "User created successfully.",
+                                            // });
                                         },
                                     })
                                 }

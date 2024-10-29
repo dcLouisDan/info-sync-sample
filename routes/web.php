@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('user.index');
     Route::post('/user/create', [UserController::class, 'createUser'])->name('user.create');
     Route::put('/user/update/{user}', [UserController::class, 'updateUser'])->name('user.update');
+    Route::get('/user/delete/{user}', [UserController::class, 'deleteUser'])->name('user.delete');
 })->middleware(AdminMiddleware::class);
 
 
