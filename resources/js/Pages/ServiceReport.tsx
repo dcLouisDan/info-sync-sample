@@ -171,7 +171,6 @@ export default function ServiceReport({
                                             Contact Name:
                                         </p>
                                         <Input
-                                            className="bg-white"
                                             placeholder="Input contact name..."
                                             type="tel"
                                             value={contact.name}
@@ -189,7 +188,6 @@ export default function ServiceReport({
                                         Contact Number:
                                     </p>
                                     <Input
-                                        className="bg-white"
                                         value={contact.phone}
                                         disabled={!isOther}
                                         placeholder="Input contact number..."
