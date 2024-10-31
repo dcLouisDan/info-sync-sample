@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientComparisonController;
+use App\Http\Controllers\CollectionListController;
 use App\Http\Controllers\InvoiceNinjaAPIController;
 use App\Http\Controllers\InvoiceNinjaWebhookController;
 use App\Http\Controllers\ProfileController;
@@ -46,6 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/quickbase/clients', [QuickbaseAPIController::class, 'fetchClients']);
 
     Route::get('/data-comparison', [ClientComparisonController::class, 'showComparison'])->name('dataComparison');
+
+    Route::get('/collection-list', [CollectionListController::class, 'index'])->name("collectionList");
 });
 
 Route::middleware('auth')->group(function () {

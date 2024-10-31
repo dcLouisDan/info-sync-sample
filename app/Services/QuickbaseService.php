@@ -16,6 +16,24 @@ class QuickbaseService
         "clients" => "bs7fe3te6",
         "payments" => "btibn3ubt"
     ];
+    private $clientSelectList = [
+        3,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        27,
+        16,
+        17,
+        20,
+        38,
+        40,
+        54,
+        56,
+        57
+    ];
 
     public function __construct()
     {
@@ -56,22 +74,7 @@ class QuickbaseService
     {
         $body = [
             'from' => $this->tables["clients"],
-            'select' => [
-                3,
-                6,
-                7,
-                8,
-                27,
-                9,
-                16,
-                17,
-                20,
-                38,
-                40,
-                54,
-                56,
-                57
-            ],  // Replace with field IDs
+            'select' => $this->clientSelectList,  // Replace with field IDs
             'where' => "{'54'.XEX.'Deactivated'}AND{'54'.XEX.'Blacklisted'}",
             'sortBy' => [
                 [
@@ -82,6 +85,29 @@ class QuickbaseService
         ];
 
         return $this->makeRequest('records/query', 'POST', $body);
+    }
+
+    public function fetchClientsGroupedByBarangay()
+    {
+        $body = [
+            'from' => $this->tables["clients"],
+            'select' => $this->clientSelectList,  // Replace with field IDs
+            'where' => "{'54'.XEX.'Deactivated'}AND{'54'.XEX.'Blacklisted'}",
+            'sortBy' => [
+                [
+                    'fieldId' => '27',
+                    'order' => 'ASC'
+                ]
+            ],
+            'groupBy' => [[
+                'fieldId' => 11,
+                'grouping' => "equal-values"
+            ]]
+        ];
+
+        $response = $this->makeRequest('records/query', 'POST', $body);
+
+        return $this->parseQuickbaseResponse($response);
     }
 
     /**

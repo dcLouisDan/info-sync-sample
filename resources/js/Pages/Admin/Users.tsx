@@ -3,7 +3,7 @@ import { UserDataTable } from "@/components/users_table/data-table";
 import { useToast } from "@/hooks/use-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { FlashMessages } from "@/types/global";
-import { usePage } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import { useEffect } from "react";
 
 type Props = {
@@ -26,11 +26,16 @@ export default function UsersPage({ users }: Props) {
     }, [flash]);
 
     return (
-        <AuthenticatedLayout>
-            <div className="w-full max-w-6xl bg-white mx-auto my-4 rounded-lg p-4 ">
-                <p className="font-bold text-2xl">Manage Users</p>
-                <UserDataTable columns={columns} data={users} />
-            </div>
-        </AuthenticatedLayout>
+        <>
+            <Head>
+                <title>Users</title>
+            </Head>
+            <AuthenticatedLayout>
+                <div className="w-full max-w-6xl bg-white mx-auto my-4 rounded-lg p-4 ">
+                    <p className="font-bold text-2xl">Manage Users</p>
+                    <UserDataTable columns={columns} data={users} />
+                </div>
+            </AuthenticatedLayout>
+        </>
     );
 }

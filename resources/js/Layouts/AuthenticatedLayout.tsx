@@ -35,6 +35,12 @@ export default function AuthenticatedLayout({
                                     Dashboard
                                 </NavLink>
                                 <NavLink
+                                    href={route("collectionList")}
+                                    active={route().current("collectionList")}
+                                >
+                                    Collection List
+                                </NavLink>
+                                <NavLink
                                     href={route("serviceReport")}
                                     active={route().current("serviceReport")}
                                 >
