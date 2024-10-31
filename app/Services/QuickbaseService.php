@@ -13,8 +13,8 @@ class QuickbaseService
     private $userToken;
     private $headers;
     private $tables = [
-        "clients" => "bujf4sbzh",
-        "payments" => "bujf53sz8"
+        "clients" => "bs7fe3te6",
+        "payments" => "btibn3ubt"
     ];
 
     public function __construct()
@@ -25,7 +25,7 @@ class QuickbaseService
         $this->userToken = env('QB_USER_TOKEN');
         $this->headers = [
             'QB-Realm-Hostname' => $this->realmHostname,
-            'User-Agent' => 'Invoice Sync',
+            'User-Agent' => 'J2 Network Report App',
             'Authorization' => 'QB-USER-TOKEN ' . $this->userToken,
             'Content-Type' => 'application/json',
         ];
@@ -60,22 +60,25 @@ class QuickbaseService
                 3,
                 6,
                 7,
-                14,
-                30,
-                31,
-                15,
-                29
-            ]  // Replace with field IDs
-        ];
-
-        return $this->makeRequest('records/query', 'POST', $body);
-    }
-
-    public function fetchInvoices()
-    {
-        $body = [
-            'from' => $this->tables["invoices"],
-            'select' => [6, 7, 9, 12, 13]  // Replace with field IDs
+                8,
+                27,
+                9,
+                16,
+                17,
+                20,
+                38,
+                40,
+                54,
+                56,
+                57
+            ],  // Replace with field IDs
+            'where' => "{'54'.XEX.'Deactivated'}AND{'54'.XEX.'Blacklisted'}",
+            'sortBy' => [
+                [
+                    'fieldId' => '27',
+                    'order' => 'ASC'
+                ]
+            ]
         ];
 
         return $this->makeRequest('records/query', 'POST', $body);

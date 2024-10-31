@@ -28,10 +28,11 @@ export function ClientCombobox({
 }) {
     const [open, setOpen] = React.useState(false);
     const clients = clientList.map((client) => ({
-        value: client?.customer,
-        label: client?.customer,
+        value: client?.customer.trim(),
+        label: client?.customer.trim(),
         id: client?.recordId,
     }));
+    console.log(clients);
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>

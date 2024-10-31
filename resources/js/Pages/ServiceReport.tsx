@@ -33,7 +33,7 @@ export default function ServiceReport({
         const contact2: CustomerContact = { name: "", phone: "" };
 
         if (clientData.customer !== "") {
-            contact1.name = clientData.customer;
+            contact1.name = clientData.firstName + " " + clientData.lastName;
         }
 
         if (clientData.mobileNumber !== "") {
@@ -60,7 +60,7 @@ export default function ServiceReport({
     const [date, setDate] = useState<Date | undefined>(today);
     const clientData =
         value !== ""
-            ? clientList.find((client) => client?.customer == value)
+            ? clientList.find((client) => client?.customer.trim() == value)
             : null;
     const contactNameList =
         clientData !== null ? getContactList(clientData) : [];
@@ -189,7 +189,6 @@ export default function ServiceReport({
                                     </p>
                                     <Input
                                         value={contact.phone}
-                                        disabled={!isOther}
                                         placeholder="Input contact number..."
                                         onChange={(e) =>
                                             setContact((prev) => ({
@@ -220,7 +219,11 @@ export default function ServiceReport({
                             <div className="w-[600px] border-2 border-zinc-950 rounded-lg overflow-hidden">
                                 <PDFViewer className="w-full h-[500px]">
                                     <ServiceReportDocument
-                                        accountName={clientData.customer}
+                                        accountName={
+                                            clientData.firstName +
+                                            " " +
+                                            clientData.lastName
+                                        }
                                         address={clientData.address}
                                         contactName={contact.name}
                                         contactNumber={contact.phone}
