@@ -1,3 +1,4 @@
+import { groupBy } from "@/lib/utils";
 import { Page, Text, View, Document, StyleSheet } from "@react-pdf/renderer";
 
 const bodyFont = "11pt";
@@ -6,6 +7,8 @@ const styles = StyleSheet.create({
     page: {
         flexDirection: "column",
         fontFamily: "Helvetica",
+        margin: "0.5in",
+        overflow: "hidden",
     },
     section: {
         display: "flex",
@@ -14,35 +17,35 @@ const styles = StyleSheet.create({
     },
     sectionHeader: {
         fontFamily: "Helvetica-Bold",
-        textAlign: "center",
         fontSize: "11pt",
         flexDirection: "row",
-        padding: "2px 0",
+        padding: "4px 0",
         borderBottom: "1px solid black",
     },
     headerTitle: {
-        textAlign: "center",
         width: "100%",
     },
     cell: {
-        flex: 1,
+        flex: 1.2,
         fontSize: bodyFont,
         padding: 2,
         margin: 0,
-        borderRight: "1px solid black",
+        borderLeft: "1px solid black",
     },
     cellHalf: {
         flex: 0.5,
         fontSize: bodyFont,
         padding: 2,
         margin: 0,
-        borderRight: "1px solid black",
+        borderLeft: "1px solid black",
     },
     cellLast: {
         fontSize: bodyFont,
         flex: 1,
         padding: 2,
         margin: 0,
+        borderRight: "1px solid black",
+        borderLeft: "1px solid black",
     },
     cellHalfLast: {
         fontSize: bodyFont,
@@ -51,11 +54,11 @@ const styles = StyleSheet.create({
         margin: 0,
     },
     headerCell: {
-        flex: 1,
+        flex: 1.2,
         fontSize: bodyFont,
         padding: 2,
         margin: 0,
-        borderRight: "1px solid black",
+        borderLeft: "1px solid black",
         fontFamily: "Helvetica-Bold",
     },
     headerCellHalf: {
@@ -63,7 +66,7 @@ const styles = StyleSheet.create({
         fontSize: bodyFont,
         padding: 2,
         margin: 0,
-        borderRight: "1px solid black",
+        borderLeft: "1px solid black",
         fontFamily: "Helvetica-Bold",
     },
     headerCellLast: {
@@ -72,6 +75,8 @@ const styles = StyleSheet.create({
         padding: 2,
         margin: 0,
         fontFamily: "Helvetica-Bold",
+        borderRight: "1px solid black",
+        borderLeft: "1px solid black",
     },
     headerCellHalfLast: {
         fontSize: bodyFont,
@@ -80,34 +85,24 @@ const styles = StyleSheet.create({
         margin: 0,
         fontFamily: "Helvetica-Bold",
     },
-    signatoryCell: {
-        flex: 1,
-        fontSize: "8pt",
-        padding: 1,
-        margin: 0,
-        width: "100%",
-        textAlign: "center",
-        borderRight: "1px solid black",
-    },
-    signatoryCellLast: {
-        flex: 1,
-        fontSize: "8pt",
-        padding: 1,
-        margin: 0,
-        width: "100%",
-        textAlign: "center",
-    },
 });
 
-export default function CollectionListDocument({}: {}) {
+export default function CollectionListDocument({
+    clientList,
+}: {
+    clientList: Array<any>;
+}) {
+    const clientsByBarangay = groupBy(clientList, "address2");
+    const barangayList = Object.keys(clientsByBarangay);
+
+    console.log(barangayList);
     return (
         <Document>
-            <Page size="A4" style={styles.page}>
+            <Page size="A4" style={styles.page} wrap={true}>
                 <View
                     style={{
-                        width: "100%",
+                        width: "7.27in",
                         textAlign: "center",
-                        marginTop: "0.5in",
                         marginBottom: "0.1in",
                         fontFamily: "Helvetica-Bold",
                         fontSize: "12pt",
@@ -117,25 +112,54 @@ export default function CollectionListDocument({}: {}) {
                 </View>
                 <View
                     style={{
-                        border: "1px solid black",
-                        margin: "0 0.5in 0.5in 0.5in",
+                        width: "7.27in",
                     }}
                 >
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.headerTitle}>Baranggay Name</Text>
-                    </View>
-                    <View style={styles.section}>
-                        <Text style={styles.headerCell}>Customer</Text>
-                        <Text style={styles.headerCell}>Plan</Text>
-                        <Text style={styles.headerCellHalfLast}>
-                            Amount Due
-                        </Text>
-                    </View>
-                    <View style={styles.section}>
-                        <Text style={styles.cell}>Name</Text>
-                        <Text style={styles.cell}>Plan</Text>
-                        <Text style={styles.cellHalfLast}>Amount Due</Text>
-                    </View>
+                    {barangayList.map((barangay, index) => {
+                        return (
+                            <View key={index} wrap={false}>
+                                <View style={styles.sectionHeader}>
+                                    <Text style={styles.headerTitle}>
+                                        {barangay.trim()}
+                                    </Text>
+                                </View>
+                                <View style={styles.section}>
+                                    <Text style={styles.headerCell}>
+                                        Customer
+                                    </Text>
+                                    <Text style={styles.headerCell}>Plan</Text>
+                                    <Text style={styles.headerCellHalf}>
+                                        Amount Due
+                                    </Text>
+                                    <Text style={styles.headerCellLast}></Text>
+                                </View>
+                                {clientsByBarangay[barangay].map(
+                                    (client: any, index: number) => {
+                                        return (
+                                            <View
+                                                style={styles.section}
+                                                key={index}
+                                                wrap={false}
+                                            >
+                                                <Text style={styles.cell}>
+                                                    {client.name}
+                                                </Text>
+                                                <Text style={styles.cell}>
+                                                    {client.custom_value3}
+                                                </Text>
+                                                <Text style={styles.cellHalf}>
+                                                    {client.overdue_balance}
+                                                </Text>
+                                                <Text
+                                                    style={styles.cellLast}
+                                                ></Text>
+                                            </View>
+                                        );
+                                    }
+                                )}
+                            </View>
+                        );
+                    })}
                 </View>
             </Page>
         </Document>

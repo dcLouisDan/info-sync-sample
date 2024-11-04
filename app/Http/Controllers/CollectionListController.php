@@ -12,13 +12,14 @@ class CollectionListController extends Controller
 {
     public function index()
     {
-        $clientsByBarangay = [];
-        // $qb = new QuickbaseService();
-        // $clientsByBarangay = $this->groupByBaranggay($qb->fetchClientsGroupedByBarangay(), "addressStreet2");
-        NinjaService::getInstance();
-        $clientsWithOverdueBalance = NinjaService::fetchActiveClientsWithOverdue();
+        return Inertia::render("CollectionList");
+    }
 
-        return Inertia::render("CollectionList", ['clientsByBarangay' => $clientsByBarangay, 'clientsWithOverdueBalance' => $clientsWithOverdueBalance]);
+    public function fetch(int $page = 1)
+    {
+        NinjaService::getInstance();
+        $clientsWithOverdueBalance = NinjaService::fetchActiveClientsWithOverdue($page);
+        return $clientsWithOverdueBalance;
     }
 
     public function groupByBaranggay($clients, $field)

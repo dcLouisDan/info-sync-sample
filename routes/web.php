@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/data-comparison', [ClientComparisonController::class, 'showComparison'])->name('dataComparison');
 
     Route::get('/collection-list', [CollectionListController::class, 'index'])->name("collectionList");
+    Route::get('/overdueClients/fetch/{page}', [CollectionListController::class, 'fetch'])->name('overdueClients');
 });
 
 Route::middleware('auth')->group(function () {

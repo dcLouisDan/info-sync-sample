@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Utils\ArrayUtils;
+use Illuminate\Support\Facades\Cache;
 use InvoiceNinja\Ninja;
 use InvoiceNinja\Sdk\InvoiceNinja;
 
@@ -33,19 +34,21 @@ class NinjaService
     return self::$instance;
   }
 
-  public static function fetchActiveClientsWithOverdue()
+  public static function fetchActiveClientsWithOverdue($current_page = 1)
   {
-    $clientsWithInvoices = [];
-    $currentPage = 1;
-    $hasMorePages = true;
+    $cacheKey = "overdue_clients_page_{$current_page}";
 
-    while ($hasMorePages) {
+    // Use cache to store results, expiring after 1 hour
+    return Cache::remember($cacheKey, now()->addHour(), function () use ($current_page) {
+      $clientsWithInvoices = [];
+
       $clientsRaw = self::$instance->clients->all([
         'status' => 'active',
-        'per_page' => 100,  // Keep a reasonable page size
+        'per_page' => 20,
         'is_deleted' => 'false',
-        'page' => $currentPage, // Fetch a specific page
+        'page' => $current_page
       ]);
+
       $clients = $clientsRaw['data'];
 
       foreach ($clients as $client) {
@@ -54,6 +57,7 @@ class NinjaService
           "client_status" => "unpaid",
           "overdue" => ""
         ]);
+
         if (count($invoices['data']) > 0) {
           $overdue_balance = 0;
           foreach ($invoices['data'] as $invoice) {
@@ -65,10 +69,10 @@ class NinjaService
         }
       }
 
-      $hasMorePages = $clientsRaw['meta']['current_page'] < $clientsRaw['meta']['total_pages'];
-      $currentPage++;
-    }
-
-    return $clientsWithInvoices;
+      return [
+        "data" => $clientsWithInvoices,
+        "pagination" => $clientsRaw['meta']['pagination']
+      ];
+    });
   }
 }

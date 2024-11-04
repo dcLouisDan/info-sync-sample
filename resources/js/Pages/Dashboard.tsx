@@ -11,7 +11,7 @@ export default function Dashboard({}: Props) {
             </Head>
             <AuthenticatedLayout>
                 <div className="mx-auto bg-white w-full max-w-4xl p-4 my-4 rounded-lg shadow">
-                    <p className="font-bold text-2xl">Dashboard</p>
+                    <p className="font-bold">Dashboard</p>
                 </div>
             </AuthenticatedLayout>
         </>
