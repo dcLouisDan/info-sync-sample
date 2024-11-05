@@ -19,16 +19,16 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table";
+} from "@/Components/ui/table";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
+} from "@/Components/ui/select";
 
-import { Input } from "@/components/ui/input";
+import { Input } from "@/Components/ui/input";
 import { DataTablePagination } from "../DataTablePagination";
 import { FilterX } from "lucide-react";
 import { Button } from "../ui/button";

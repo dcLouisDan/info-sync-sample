@@ -1,7 +1,7 @@
-import { ClientCombobox } from "@/components/ClientCombobox";
-import { DatePicker } from "@/components/DatePicker";
-import ServiceReportDocument from "@/components/ServiceReportDocument";
-import { Textarea } from "@/components/ui/textarea";
+import { ClientCombobox } from "@/Components/ClientCombobox";
+import { DatePicker } from "@/Components/DatePicker";
+import ServiceReportDocument from "@/Components/ServiceReportDocument";
+import { Textarea } from "@/Components/ui/textarea";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { PDFViewer } from "@react-pdf/renderer";
@@ -14,8 +14,8 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+} from "@/Components/ui/select";
+import { Input } from "@/Components/ui/input";
 
 type CustomerContact = {
     name: string;

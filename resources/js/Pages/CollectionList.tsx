@@ -1,7 +1,7 @@
-import { columns } from "@/components/collection_table/columns";
-import { CollectionDataTable } from "@/components/collection_table/data-table";
-import DownloadGroupedCSV from "@/components/DownloadGroupedCSV";
-import { Skeleton } from "@/components/ui/skeleton";
+import { columns } from "@/Components/collection_table/columns";
+import { CollectionDataTable } from "@/Components/collection_table/data-table";
+import DownloadGroupedCSV from "@/Components/DownloadGroupedCSV";
+import { Skeleton } from "@/Components/ui/skeleton";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import axios from "axios";

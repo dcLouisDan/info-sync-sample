@@ -12,9 +12,9 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/Components/ui/dialog";
+import { Input } from "@/Components/ui/input";
+import { Label } from "@/Components/ui/label";
 import {
     Select,
     SelectContent,
@@ -23,7 +23,7 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
+} from "@/Components/ui/select";
 import { useState } from "react";
 
 // This type is used to define the shape of our data.

@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@/Components/ui/checkbox";
 import { Button } from "../ui/button";
 import { ArrowUpDown } from "lucide-react";
 

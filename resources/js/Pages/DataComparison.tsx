@@ -1,12 +1,12 @@
-import { columns } from "@/components/client_table/columns";
-import { columns as paymentColumns } from "@/components/payments_table/columns";
-import { DataTable } from "@/components/client_table/data-table";
-import { DataTable as PaymentTable } from "@/components/payments_table/data-table";
+import { columns } from "@/Components/client_table/columns";
+import { columns as paymentColumns } from "@/Components/payments_table/columns";
+import { DataTable } from "@/Components/client_table/data-table";
+import { DataTable as PaymentTable } from "@/Components/payments_table/data-table";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { PageProps } from "@/types";
 import { FlashMessages } from "@/types/global";
 import { Head, usePage } from "@inertiajs/react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 
 type Props = {
     quickbaseClients: Array<any>;

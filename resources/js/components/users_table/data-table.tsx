@@ -19,7 +19,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table";
+} from "@/Components/ui/table";
 
 import { Button } from "../ui/button";
 import {
@@ -30,8 +30,8 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+} from "@/Components/ui/dialog";
+import { Label } from "@/Components/ui/label";
 import {
     Select,
     SelectContent,
@@ -40,9 +40,9 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
+} from "@/Components/ui/select";
 
-import { Input } from "@/components/ui/input";
+import { Input } from "@/Components/ui/input";
 import { useForm } from "@inertiajs/react";
 
 interface DataTableProps<TData, TValue> {

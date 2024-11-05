@@ -19,9 +19,9 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table";
+} from "@/Components/ui/table";
 
-import { Input } from "@/components/ui/input";
+import { Input } from "@/Components/ui/input";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];

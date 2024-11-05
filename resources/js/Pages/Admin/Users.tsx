@@ -1,5 +1,5 @@
-import { columns } from "@/components/users_table/columns";
-import { UserDataTable } from "@/components/users_table/data-table";
+import { columns } from "@/Components/users_table/columns";
+import { UserDataTable } from "@/Components/users_table/data-table";
 import { useToast } from "@/hooks/use-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { FlashMessages } from "@/types/global";
