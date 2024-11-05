@@ -52,6 +52,8 @@ const styles = StyleSheet.create({
         flex: 0.5,
         padding: 2,
         margin: 0,
+        borderRight: "1px solid black",
+        borderLeft: "1px solid black",
     },
     headerCell: {
         flex: 1.2,
@@ -84,6 +86,8 @@ const styles = StyleSheet.create({
         padding: 2,
         margin: 0,
         fontFamily: "Helvetica-Bold",
+        borderRight: "1px solid black",
+        borderLeft: "1px solid black",
     },
 });
 
@@ -123,16 +127,6 @@ export default function CollectionListDocument({
                                         {barangay.trim()}
                                     </Text>
                                 </View>
-                                <View style={styles.section}>
-                                    <Text style={styles.headerCell}>
-                                        Customer
-                                    </Text>
-                                    <Text style={styles.headerCell}>Plan</Text>
-                                    <Text style={styles.headerCellHalf}>
-                                        Amount Due
-                                    </Text>
-                                    <Text style={styles.headerCellLast}></Text>
-                                </View>
                                 {clientsByBarangay[barangay].map(
                                     (client: any, index: number) => {
                                         return (
@@ -151,7 +145,7 @@ export default function CollectionListDocument({
                                                     {client.overdue_balance}
                                                 </Text>
                                                 <Text
-                                                    style={styles.cellLast}
+                                                    style={styles.cellHalfLast}
                                                 ></Text>
                                             </View>
                                         );

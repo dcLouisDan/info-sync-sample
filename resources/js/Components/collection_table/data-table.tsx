@@ -69,6 +69,11 @@ export function CollectionDataTable<TData, TValue>({
             columnFilters,
             rowSelection,
         },
+        initialState: {
+            pagination: {
+                pageSize: data.length,
+            },
+        },
     });
 
     return (
@@ -106,6 +111,11 @@ export function CollectionDataTable<TData, TValue>({
                         onValueChange={(value) => {
                             table.getColumn("address2")?.setFilterValue(value);
                         }}
+                        value={
+                            (table
+                                .getColumn("address2")
+                                ?.getFilterValue() as string) ?? ""
+                        }
                     >
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Barangay" />
@@ -128,6 +138,11 @@ export function CollectionDataTable<TData, TValue>({
                                 .getColumn("custom_value3")
                                 ?.setFilterValue(value);
                         }}
+                        value={
+                            (table
+                                .getColumn("custom_value3")
+                                ?.getFilterValue() as string) ?? ""
+                        }
                     >
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Internet Plan" />

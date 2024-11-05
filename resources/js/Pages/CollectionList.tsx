@@ -1,22 +1,11 @@
 import { columns } from "@/components/collection_table/columns";
 import { CollectionDataTable } from "@/components/collection_table/data-table";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-
-import CollectionListDocument from "@/components/CollectionListDocument";
+import DownloadGroupedCSV from "@/components/DownloadGroupedCSV";
 import { Skeleton } from "@/components/ui/skeleton";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import { PDFViewer } from "@react-pdf/renderer";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Button, buttonVariants } from "@/components/ui/button";
 
 export default function CollectionListPage() {
     const [clientsWithOverdueBalance, setClientsWithOverdueBalance] = useState<
@@ -84,24 +73,7 @@ export default function CollectionListPage() {
             <AuthenticatedLayout>
                 <div className="mx-auto bg-white w-full max-w-4xl p-4 my-4 rounded-lg shadow flex justify-between items-center">
                     <h1 className="font-bold">Payment Collection List</h1>
-                    <Dialog>
-                        <DialogTrigger className={buttonVariants({})}>
-                            Print List
-                        </DialogTrigger>
-                        <DialogContent className="">
-                            <DialogHeader>
-                                <DialogTitle>Print Preview</DialogTitle>
-                                <DialogDescription>
-                                    List of clients for payment collection.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <PDFViewer className="w-full h-[500px] rounded-md">
-                                <CollectionListDocument
-                                    clientList={selectedData}
-                                />
-                            </PDFViewer>
-                        </DialogContent>
-                    </Dialog>
+                    <DownloadGroupedCSV data={selectedData} />
                 </div>
                 <div className="w-full max-w-4xl bg-white rounded-lg mx-auto mb-8">
                     {isLoading && (
